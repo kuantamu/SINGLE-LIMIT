@@ -49,6 +49,9 @@ public class IdleState : PlayerState
 #region 防御ステート
 public class GuardState : PlayerState
 {
+    // CharacterStats をキャッシュして毎フレームの GetComponent を避ける
+    private CharacterStats _stats;
+
     public GuardState(PlayerStateMachine sm) : base(sm) {}
 
     public override void Enter()
@@ -56,9 +59,16 @@ public class GuardState : PlayerState
         SM.Movement.StopHorizontal();
         SM.AnimController.PlayGuard();
 
-        // 防御中フラグを立てる（ダメージ軽減に使用）
-        var stats = SM.GetComponent<CharacterStats>();
-        if (stats != null) stats.IsGuarding = true;
+        // Enter 時に一度だけ取得してキャッシュ
+        _stats = SM.GetComponent<CharacterStats>();
+        if (_stats != null) _stats.IsGuarding = true;
+    }
+
+    public override void Exit()
+    {
+        // ガード状態の解除は Exit で一元管理する
+        // これにより攻撃・回避などどのキャンセルルートでも確実に解除される
+        if (_stats != null) _stats.IsGuarding = false;
     }
 
     public override void Update()
@@ -78,8 +88,6 @@ public class GuardState : PlayerState
 
         if (!SM.InputHandler.IsGuardHeld)
         {
-            var stats = SM.GetComponent<CharacterStats>();
-            if (stats != null) stats.IsGuarding = false;
             SM.TransitionTo(SM.Idle);
             return;
         }
@@ -119,7 +127,6 @@ public class SpecialState : PlayerState
 
     private void HandleMotionEnd()
     {
-        // モーション終了後に GameObject を無効化
         SM.TransitionTo(SM.Idle);
     }
 }
@@ -233,7 +240,6 @@ public class AttackState : PlayerState
             SM.TransitionTo(SM.HeavyAttack);
             return;
         }
-
 
         if (SM.InputHandler.SpecialPressed)
         {
@@ -356,7 +362,6 @@ public class PlayerDeathState : PlayerState
 
     private void HandleMotionEnd()
     {
-        // モーション終了後に GameObject を無効化
         SM.gameObject.SetActive(false);
     }
 }

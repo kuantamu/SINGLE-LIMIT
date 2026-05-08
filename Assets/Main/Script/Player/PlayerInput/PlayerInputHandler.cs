@@ -29,7 +29,7 @@ public class PlayerInputHandler : MonoBehaviour
 
     /// <summary>
     /// 強攻撃が確定した瞬間か。
-    /// 左クリックを離した時、長押し時間が閾値以上なら true。
+    /// 長押し時間が閾値に達した最初の1フレームだけ true。
     /// </summary>
     public bool HeavyAttackPressed { get; private set; }
 
@@ -53,13 +53,15 @@ public class PlayerInputHandler : MonoBehaviour
     public bool HasBufferedAttack => _buffer.HasAttack;
 
     /// <summary>攻撃の入力を防ぐ</summary>
-    public bool AttackLock;
+    public bool AttackLock { get; set; }
 
     // ---- 内部 ----
     private readonly InputBuffer _buffer = new InputBuffer();
-    private bool _bufferOpen;
-    private float _holdTimer; // 左クリックを押し続けた時間
+    private bool  _bufferOpen;
+    private float _holdTimer;        // 左クリックを押し続けた時間
+    private bool  _heavyAttackFired; // 閾値到達後の多重発火を防ぐフラグ
     #endregion
+
     private void Update()
     {
         float h   = Input.GetAxisRaw("Horizontal");
@@ -68,28 +70,43 @@ public class PlayerInputHandler : MonoBehaviour
 
         IsGuardHeld     = Input.GetMouseButton(1);
         IsAttackHeld    = Input.GetMouseButton(0);
-        SpecialPressed = Input.GetKeyDown(KeyCode.Q);
+        SpecialPressed  = Input.GetKeyDown(KeyCode.Q);
         IsFastSpeedHeld = Input.GetKey(KeyCode.LeftShift);
 
-        if (Input.GetMouseButtonDown(0)) _holdTimer = 0;
-        if (IsAttackHeld) _holdTimer += Time.deltaTime;
-
-        AttackPressed = false;
-        HeavyAttackPressed = false;
-
-
-        if (_holdTimer >= _heavyAttackThreshold && AttackLock == false)
-            HeavyAttackPressed = true;
-
-        if (Input.GetMouseButtonUp(0))
+        // 押した瞬間にタイマーとフラグをリセット
+        if (Input.GetMouseButtonDown(0))
         {
-            if(AttackLock == false)AttackPressed = true;
-            _holdTimer = 0f;
-            AttackLock = false;
+            _holdTimer        = 0f;
+            _heavyAttackFired = false;
         }
 
+        if (IsAttackHeld)
+            _holdTimer += Time.deltaTime;
 
+        // ---- 攻撃判定（毎フレームリセット → 条件が満たされた時だけ true）----
+        AttackPressed      = false;
+        HeavyAttackPressed = false;
 
+        // 強攻撃：閾値を超えた最初の1フレームだけ発火
+        if (IsAttackHeld
+            && _holdTimer >= _heavyAttackThreshold
+            && !_heavyAttackFired
+            && !AttackLock)
+        {
+            HeavyAttackPressed = true;
+            _heavyAttackFired  = true; // 以降は発火しない
+        }
+
+        // 通常攻撃：クリックを離した時、長押し未満なら発火
+        if (Input.GetMouseButtonUp(0))
+        {
+            if (!AttackLock && !_heavyAttackFired)
+                AttackPressed = true;
+
+            _holdTimer = 0f;
+            AttackLock = false;
+            _heavyAttackFired = false;
+        }
 
         // バッファが開いている時だけ積み込む
         if (AttackPressed && _bufferOpen)
@@ -119,6 +136,5 @@ public class PlayerInputHandler : MonoBehaviour
     public bool ConsumeBufferedAttack() => _buffer.ConsumeAttack();
 
     public void CancelBuffer() => CloseAndCancelBuffer();
-
     #endregion
 }

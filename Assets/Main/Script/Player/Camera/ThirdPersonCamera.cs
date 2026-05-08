@@ -1,6 +1,5 @@
 using UnityEngine;
 
-
 public class ThirdPersonCamera : MonoBehaviour
 {
     // ---- Inspector ----
@@ -58,29 +57,46 @@ public class ThirdPersonCamera : MonoBehaviour
 
         _currentDistance = _distance;
         _targetDistance  = _distance;
-        Cursor.visible = false;
+        Cursor.visible   = false;
         Cursor.lockState = CursorLockMode.Locked;
     }
 
-    private void FixedUpdate()
+    /// <summary>
+    /// マウス入力と座標計算は Update で行う。
+    /// Input.GetAxis はレンダーフレームで蓄積されるため
+    /// FixedUpdate で読むと入力が消えたり重複する原因になる。
+    /// </summary>
+    private void Update()
     {
         if (_target == null) return;
 
-        HandleRotation();
-        HandleZoom();
+        HandleRotationInput();
+        HandleZoomInput();
+    }
+
+    /// <summary>
+    /// カメラ位置の適用は LateUpdate で行う。
+    /// キャラクターが Update で移動した後に追従することで
+    /// 1フレームのズレなくなめらかに追う。
+    /// </summary>
+    private void LateUpdate()
+    {
+        if (_target == null) return;
+
+        SmoothZoom();
         ApplyTransform();
     }
 
     // ---- 内部処理 ----
 
-    private void HandleRotation()
+    private void HandleRotationInput()
     {
         _yaw   += Input.GetAxis("Mouse X") * _horizontalSensitivity * Time.deltaTime;
         _pitch -= Input.GetAxis("Mouse Y") * _verticalSensitivity   * Time.deltaTime;
         _pitch  = Mathf.Clamp(_pitch, _verticalMin, _verticalMax);
     }
 
-    private void HandleZoom()
+    private void HandleZoomInput()
     {
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         if (Mathf.Abs(scroll) > 0.001f)
@@ -88,8 +104,10 @@ public class ThirdPersonCamera : MonoBehaviour
             _targetDistance -= scroll * _zoomSpeed;
             _targetDistance  = Mathf.Clamp(_targetDistance, _minDistance, _maxDistance);
         }
+    }
 
-        // ズームをスムーズに適用
+    private void SmoothZoom()
+    {
         _currentDistance = Mathf.Lerp(
             _currentDistance, _targetDistance, Time.deltaTime * _zoomSpeed);
     }
@@ -101,8 +119,8 @@ public class ThirdPersonCamera : MonoBehaviour
         Quaternion rotation = Quaternion.Euler(_pitch, _yaw, 0f);
 
         // 壁抜け防止: 注視点からカメラ方向に SphereCast
-        float adjustedDistance = _currentDistance;
-        Vector3 castDir = rotation * Vector3.back;
+        float   adjustedDistance = _currentDistance;
+        Vector3 castDir          = rotation * Vector3.back;
 
         if (Physics.SphereCast(
                 pivot,

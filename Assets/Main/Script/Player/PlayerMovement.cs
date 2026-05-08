@@ -1,5 +1,4 @@
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerMovement : MonoBehaviour
@@ -13,6 +12,10 @@ public class PlayerMovement : MonoBehaviour
     [Header("加速")]
     [SerializeField] private float _fastSpeed = 15f;
 
+    [Header("回転")]
+    [Tooltip("移動方向への回転速度（deg/s）")]
+    [SerializeField] private float _rotationSpeed = 720f;
+
     [Header("回避")]
     [Tooltip("回避の移動距離（m）")]
     [SerializeField] private float _dodgeDistance = 4f;
@@ -25,9 +28,9 @@ public class PlayerMovement : MonoBehaviour
     private Vector3   _horizontalVel;
 
     private bool    _isDodging;
-    private float _dodgeTimer;
+    private float   _dodgeTimer;
     private Vector3 _dodgeVelocity;
-    private bool _isFast = false;
+    private bool    _isFast = false;
     #endregion
 
     private void Awake()
@@ -56,24 +59,19 @@ public class PlayerMovement : MonoBehaviour
         _rb.linearVelocity = vel;
     }
 
-    //毎フレーム呼ぶ。input がゼロなら減速して停止する。
+    /// <summary>
+    /// 毎フレーム呼ぶ。input がゼロなら減速して停止する。
+    /// </summary>
     public void Move(Vector2 input)
     {
-        Vector3 dir = CameraRelativeDirection(input);
-        float MoveSpeed;
-        if (_isFast)  {
-            MoveSpeed = _fastSpeed;
-        }
-        else {
-            MoveSpeed = _moveSpeed;
-        }
+        Vector3 dir   = CameraRelativeDirection(input);
+        float speed   = _isFast ? _fastSpeed : _moveSpeed;
+        Vector3 target = dir * speed;
 
-        Vector3 target = dir * MoveSpeed;
-
-        //float accel = input.magnitude > 0.1f ? _acceleration : _deceleration;
-        //_horizontalVel = Vector3.MoveTowards(_horizontalVel, target, accel * Time.deltaTime);
-        _horizontalVel = target;
-
+        // 入力がある時は加速、ない時は減速
+        float accel = input.magnitude > 0.1f ? _acceleration : _deceleration;
+        _horizontalVel = Vector3.MoveTowards(
+            _horizontalVel, target, accel * Time.deltaTime);
 
         if (dir != Vector3.zero)
             FaceDirection(dir);
@@ -84,7 +82,9 @@ public class PlayerMovement : MonoBehaviour
         _isFast = f;
     }
 
-    //回避の移動フェーズを開始する。DodgeState の Active フェーズ開始時に呼ぶ。
+    /// <summary>
+    /// 回避の移動フェーズを開始する。DodgeState の Active フェーズ開始時に呼ぶ。
+    /// </summary>
     public void StartDodgeMove(Vector2 input)
     {
         Vector3 dir = CameraRelativeDirection(input);
@@ -97,11 +97,11 @@ public class PlayerMovement : MonoBehaviour
 
         _isDodging  = true;
         _dodgeTimer = _dodgeActiveDuration;
-
-        // 向きは変えない
     }
 
-    //回避の移動を停止する。DodgeState の Active フェーズ終了時に呼ぶ。
+    /// <summary>
+    /// 回避の移動を停止する。DodgeState の Active フェーズ終了時に呼ぶ。
+    /// </summary>
     public void StopDodge()
     {
         _isDodging     = false;
@@ -109,7 +109,10 @@ public class PlayerMovement : MonoBehaviour
         _dodgeVelocity = Vector3.zero;
         StopHorizontal();
     }
-    //カメラの前方向きにキャラクターを向ける。
+
+    /// <summary>
+    /// カメラの前方向きにキャラクターを向ける。
+    /// </summary>
     public void FaceCamera()
     {
         Vector3 camForward = _cam.transform.forward;
@@ -118,7 +121,9 @@ public class PlayerMovement : MonoBehaviour
         FaceDirection(camForward.normalized);
     }
 
-    //水平速度をゼロにする。
+    /// <summary>
+    /// 水平速度をゼロにする。
+    /// </summary>
     public void StopHorizontal()
     {
         _horizontalVel = Vector3.zero;
@@ -128,26 +133,35 @@ public class PlayerMovement : MonoBehaviour
         _rb.linearVelocity = vel;
     }
 
+    // ---- 内部 ----
+
     private Vector3 CameraRelativeDirection(Vector2 input)
     {
         if (input.magnitude < 0.1f) return Vector3.zero;
 
-        Vector3 forward = _cam.transform.forward;
-        Vector3 right   = _cam.transform.right;
-        forward = InputNomarized(forward);
-        right = InputNomarized(right);
+        Vector3 forward = FlattenAndNormalize(_cam.transform.forward);
+        Vector3 right   = FlattenAndNormalize(_cam.transform.right);
 
         return (forward * input.y + right * input.x).normalized;
     }
 
+    /// <summary>
+    /// 指定した方向へ滑らかに回転する。
+    /// </summary>
     private void FaceDirection(Vector3 dir)
     {
         if (dir == Vector3.zero) return;
-        transform.rotation = Quaternion.LookRotation(dir);
+        Quaternion target = Quaternion.LookRotation(dir);
+        transform.rotation = Quaternion.RotateTowards(
+            transform.rotation, target, _rotationSpeed * Time.deltaTime);
     }
-    private Vector3 InputNomarized(Vector3 input)
+
+    /// <summary>
+    /// ベクトルの Y を 0 にして正規化する。
+    /// </summary>
+    private Vector3 FlattenAndNormalize(Vector3 v)
     {
-        input.y = 0;
-        return input.normalized;
+        v.y = 0f;
+        return v.normalized;
     }
 }
