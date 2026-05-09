@@ -58,15 +58,23 @@ public class DamageNumberPopup : MonoBehaviour
         _duration   = duration;
         _elapsed    = 0f;
         _startColor = color;
-        _cam        = Camera.main;
+        
+        // Camera.main はタグ検索するため重い → キャッシュする
+        if (_cam == null)
+            _cam = Camera.main;
 
-        _text.text     = damage.ToString();
-        _text.color    = color;
-        _text.fontSize = fontSize;
+        if (_text != null)
+        {
+            _text.text     = damage.ToString();
+            _text.color    = color;
+            _text.fontSize = fontSize;
+        }
 
-        _damageTypeText.text = damageType.ToString();
-        Debug.Log(resistanceLevel);
-        _resistanceTypeText.text = resistanceLevel.ToString();
+        if (_damageTypeText != null)
+            _damageTypeText.text = damageType.ToString();
+
+        if (_resistanceTypeText != null)
+            _resistanceTypeText.text = resistanceLevel.ToString();
     }
 
     private void Update()
@@ -77,9 +85,12 @@ public class DamageNumberPopup : MonoBehaviour
         transform.position += Vector3.up * _floatSpeed * Time.deltaTime;
 
         // フェードアウト
-        Color c = _startColor;
-        c.a         = Mathf.Lerp(1f, 0f, _elapsed / _duration);
-        _text.color = c;
+        if (_text != null)
+        {
+            Color c = _startColor;
+            c.a         = Mathf.Lerp(1f, 0f, _elapsed / _duration);
+            _text.color = c;
+        }
 
         // カメラの方を向く（ビルボード）
         if (_cam != null)

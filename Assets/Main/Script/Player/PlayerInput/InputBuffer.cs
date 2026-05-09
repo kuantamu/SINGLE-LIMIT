@@ -4,7 +4,9 @@
 /// </summary>
 public class InputBuffer
 {
-    private const float BufferDuration = 1f;
+    // アクションゲームの標準的なバッファ時間は 0.1~0.3秒
+    // 0.2秒なら約 12フレーム分（60FPS 想定）
+    private const float BufferDuration = 0.2f;
     private float _timer;
 
     /// <summary>バッファに攻撃入力が残っているか</summary>

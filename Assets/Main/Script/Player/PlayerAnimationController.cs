@@ -42,12 +42,6 @@ public class PlayerAnimationController : MonoBehaviour
 
     /// <summary>キャンセル行動（移動・防御）を許可するタイミングの通知</summary>
     public event Action OnCancellableFrame;
-
-    /** 攻撃判定を有効にするタイミングの通知 */
-    public event Action OnAttackActive;
-
-    /** 攻撃判定を無効にするタイミングの通知 */
-    public event Action OnAttackEnd;
     #endregion
 
     public int AttackCount =>
@@ -80,10 +74,7 @@ public class PlayerAnimationController : MonoBehaviour
             if (!_suppressMotionEnd)
                 OnMotionEnd?.Invoke();
         };
-
-        Debug.Log($"[PlayerAnimationController] Animator を自動バインドしました: {_characterAnimator.gameObject.name}");
     }
-
 
     #region シグナル関連
     /// <summary>バッファ開放 Signal の受信口</summary>
@@ -91,8 +82,6 @@ public class PlayerAnimationController : MonoBehaviour
 
     /// <summary>キャンセル可能フレーム Signal の受信口</summary>
     public void NotifyCancellableFrame() => OnCancellableFrame?.Invoke();
-    public void NotifyAttackActive()     => OnAttackActive?.Invoke();
-    public void NotifyAttackEnd()        => OnAttackEnd?.Invoke();
     #endregion
 
     #region 再生API

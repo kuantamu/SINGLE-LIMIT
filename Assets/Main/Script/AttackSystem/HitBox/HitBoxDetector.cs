@@ -5,6 +5,10 @@ using UnityEngine;
 /// <summary>
 /// HitBoxBehaviour が生成したオブジェクトにアタッチして
 /// OnTriggerStay を受け取る MonoBehaviour。
+///
+/// OnTriggerStay は毎物理フレーム呼ばれるため、_hitTimes のエントリが
+/// コライダーが Trigger を抜けた時に削除される必要がある。
+/// さもなければメモリ膨張の原因になる。
 /// </summary>
 [RequireComponent(typeof(BoxCollider))]
 public class HitBoxDetector : MonoBehaviour
@@ -40,11 +44,20 @@ public class HitBoxDetector : MonoBehaviour
         // 再ヒット間隔チェック
         if (_hitTimes.TryGetValue(other, out float lastTime))
         {
-            if (_hitInterval <= 0f) return;
-            if (Time.time - lastTime < _hitInterval) return;
+            if (_hitInterval <= 0f) return; // 1回のみの場合
+            if (Time.time - lastTime < _hitInterval) return; // インターバル未経過
         }
 
         _hitTimes[other] = Time.time;
         _onHit?.Invoke(other);
+    }
+
+    /// <summary>
+    /// Trigger を抜けたコライダーのヒット履歴を削除する。
+    /// これにより大量敵の多段ヒット後にメモリが膨張するのを防ぐ。
+    /// </summary>
+    private void OnTriggerExit(Collider other)
+    {
+        _hitTimes.Remove(other);
     }
 }

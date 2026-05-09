@@ -7,12 +7,14 @@ using UnityEngine;
 [RequireComponent(typeof(EnemyAnimationController))]
 [RequireComponent(typeof(EnemyDetector))]
 [RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(CharacterStats))]
 public class EnemyStateMachine : MonoBehaviour
 {
     // ---- 参照 ----
     public EnemyMovement            Movement       { get; private set; }
     public EnemyAnimationController AnimController { get; private set; }
     public EnemyDetector            Detector       { get; private set; }
+    public CharacterStats           CharStats      { get; private set; }
 
     // ---- 設定 ----
     [Header("攻撃範囲")]
@@ -58,16 +60,30 @@ public class EnemyStateMachine : MonoBehaviour
         Movement       = GetComponent<EnemyMovement>();
         AnimController = GetComponent<EnemyAnimationController>();
         Detector       = GetComponent<EnemyDetector>();
+        CharStats      = GetComponent<CharacterStats>();
 
         Idle    = new EnemyIdleState(this);
         Chase   = new EnemyChaseState(this);
         Attack  = new EnemyAttackState(this);
         Stagger = new EnemyStaggerState(this);
-        Death     = new EnemyDeathState(this);
+        Death   = new EnemyDeathState(this);
         Knockback = new EnemyKnockbackState(this);
     }
 
-    private void Start() => TransitionTo(Idle);
+    private void Start()
+    {
+        // HP が 0 になったら死亡状態に遷移
+        if (CharStats != null)
+            CharStats.OnDeath += TriggerDeath;
+
+        TransitionTo(Idle);
+    }
+
+    private void OnDestroy()
+    {
+        if (CharStats != null)
+            CharStats.OnDeath -= TriggerDeath;
+    }
 
     private void Update() => CurrentState?.Update();
 
@@ -80,8 +96,12 @@ public class EnemyStateMachine : MonoBehaviour
         CurrentState.Enter();
     }
 
-    /// <summary>怯み状態に遷移する。ダメージ処理から呼ぶ。</summary>
-    public void TriggerStagger() => TransitionTo(Stagger);
+    /// <summary>怯み状態に遷移する。ダメージ処理から呼ぶ。死亡中は無視。</summary>
+    public void TriggerStagger()
+    {
+        if (CurrentState is EnemyDeathState) return;
+        TransitionTo(Stagger);
+    }
 
     /// <summary>死亡状態に遷移する。CharacterStats.OnDeath から呼ぶ。</summary>
     public void TriggerDeath() => TransitionTo(Death);

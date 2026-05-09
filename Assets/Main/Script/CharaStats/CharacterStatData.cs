@@ -23,17 +23,17 @@ public class CharacterStatData : ScriptableObject
     public ResistanceLevel PierceResistance = ResistanceLevel.Normal;
     public ResistanceLevel StrikeResistance = ResistanceLevel.Normal;
 
-    public ResistanceLevel attributeResistanceLevel(AttributeType attributeType)
+    /// <summary>
+    /// 属性に対応する耐性レベルを取得する。
+    /// </summary>
+    public ResistanceLevel GetAttributeResistanceLevel(AttributeType attributeType)
     {
-        switch (attributeType){
-            case AttributeType.Slash:
-                return SlashResistance;
-            case AttributeType.Pierce:
-                return PierceResistance;
-            case AttributeType.Strike:
-                return StrikeResistance;
-            default:
-                return ResistanceLevel.Normal;
-        }
+        return attributeType switch
+        {
+            AttributeType.Slash  => SlashResistance,
+            AttributeType.Pierce => PierceResistance,
+            AttributeType.Strike => StrikeResistance,
+            _                    => ResistanceLevel.Normal
+        };
     }
 }

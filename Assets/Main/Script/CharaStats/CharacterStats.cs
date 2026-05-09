@@ -33,7 +33,7 @@ public class CharacterStats : MonoBehaviour
 
     // ---- イベント ----
 
-    /// <summary>ダメージを受けた時のイベント。（実ダメージ量, クリティカルか）</summary>
+    /// <summary>ダメージを受けた時のイベント。（実ダメージ量, クリティカルか, 攻撃の属性）</summary>
     public event Action<int, bool, AttributeType> OnDamaged;
 
     /// <summary>HP が 0 になった時のイベント</summary>
@@ -65,19 +65,16 @@ public class CharacterStats : MonoBehaviour
         // 防御中フラグを DamageInfo に反映
         info.IsGuarded = IsGuarding;
 
+        // ダメージ計算
         int damage = DamageCalculator.Calculate(info, _statData, out bool isCritical);
 
-        //Debug.Log($"[CharacterStats] {gameObject.name} " +
-        //          $"ダメージ: {damage}" +
-        //          $"{(isCritical ? " [クリティカル]" : "")}" +
-        //          $"{(info.IsGuarded ? " [ガード]" : "")}" +
-        //          $" HP: {CurrentHP}/{MaxHP}");
-
-
-        OnDamaged?.Invoke(damage, isCritical,info.Attribute);
-
+        // HP を減算
         CurrentHP = Mathf.Max(0, CurrentHP - damage);
 
+        // ダメージイベント発火（HP 更新後）
+        OnDamaged?.Invoke(damage, isCritical, info.Attribute);
+
+        // 死亡判定
         if (CurrentHP <= 0)
             OnDeath?.Invoke();
     }

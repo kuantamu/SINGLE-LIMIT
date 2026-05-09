@@ -8,12 +8,15 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerMovement))]
 [RequireComponent(typeof(PlayerAnimationController))]
 [RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(CharacterStats))]
 public class PlayerStateMachine : MonoBehaviour
 {
     // ---- 参照 ----
     public PlayerInputHandler        InputHandler   { get; private set; }
     public PlayerMovement            Movement       { get; private set; }
     public PlayerAnimationController AnimController { get; private set; }
+    private CharacterStats           _stats;
+
     // ---- 設定 ----
     [Header("回避設定")]
     [SerializeField] public DodgeSettings DodgeConfig = new DodgeSettings();
@@ -22,7 +25,7 @@ public class PlayerStateMachine : MonoBehaviour
     public IdleState   Idle   { get; private set; }
     public GuardState  Guard  { get; private set; }
     public DodgeState  Dodge  { get; private set; }
-    public AttackState      Attack { get; private set; }
+    public AttackState Attack { get; private set; }
     public PlayerDeathState Death  { get; private set; }
     public SpecialState Special { get; private set; }
     public HeavyAttackState HeavyAttack { get; private set; }
@@ -41,6 +44,8 @@ public class PlayerStateMachine : MonoBehaviour
         InputHandler   = GetComponent<PlayerInputHandler>();
         Movement       = GetComponent<PlayerMovement>();
         AnimController = GetComponent<PlayerAnimationController>();
+        _stats         = GetComponent<CharacterStats>();
+
         Idle   = new IdleState(this);
         Guard  = new GuardState(this);
         Dodge  = new DodgeState(this);
@@ -50,7 +55,20 @@ public class PlayerStateMachine : MonoBehaviour
         HeavyAttack = new HeavyAttackState(this);
     }
 
-    private void Start() => TransitionTo(Idle);
+    private void Start()
+    {
+        // HP が 0 になったら死亡状態に遷移
+        if (_stats != null)
+            _stats.OnDeath += TriggerDeath;
+
+        TransitionTo(Idle);
+    }
+
+    private void OnDestroy()
+    {
+        if (_stats != null)
+            _stats.OnDeath -= TriggerDeath;
+    }
 
     private void Update()
     {

@@ -39,7 +39,7 @@ public class EnemyDetector : MonoBehaviour
 
     // ---- プロパティ ----
 
-    /// <summary>現在検知しているプレイヤーの Transform。未検知なら null。</summary>
+    /// <summary>現在検知しているプレイヤーの Transform（未検知なら null）。</summary>
     public Transform DetectedPlayer { get; private set; }
 
     /// <summary>プレイヤーを検知しているか</summary>
@@ -73,7 +73,9 @@ public class EnemyDetector : MonoBehaviour
             Collider col = _overlapResults[i];
             if (!col.CompareTag("Player")) continue;
 
-            Transform target = col.transform;
+            // プレイヤーのルート Transform を取得
+            // コライダーが子オブジェクトにある場合でも、プレイヤーのルート位置を計算する
+            Transform target = col.transform.root;
 
             // 扇状視野チェック
             if (!IsInFieldOfView(target.position)) continue;

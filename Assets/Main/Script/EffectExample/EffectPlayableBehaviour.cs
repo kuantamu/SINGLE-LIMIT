@@ -48,7 +48,7 @@ public class EffectPlayableBehaviour : PlayableBehaviour
             ps = ParticleSystem.Instantiate(particleSystem,playerData as Transform);
             ps.transform.localPosition = Example_tf.Position;
             ps.transform.localRotation = 
-                Quaternion.Euler(Example_tf.Rotate.x, Example_tf.Rotate.y, Example_tf.Rotate.z);
+                Quaternion.Euler(Example_tf.Rotation.x, Example_tf.Rotation.y, Example_tf.Rotation.z);
             ps.transform.localScale = Example_tf.Scale;
             ps.Play();
             return;

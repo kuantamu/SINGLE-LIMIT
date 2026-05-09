@@ -31,25 +31,31 @@ public class DamageNumberEffect : IHitEffect
         var stats = hitCollider.GetComponentInParent<CharacterStats>();
         if (stats == null) return;
 
-        System.Action<int, bool,AttributeType> handler = null;
+        // OnDamaged に一度だけ購読して、発火したら即座に解除する
+        // これにより多段ヒット中に複数のハンドラが蓄積するのを防ぐ
+        System.Action<int, bool, AttributeType> handler = null;
         handler = (damage, isCritical, damageType) =>
         {
-            Debug.Log(stats.StatData.attributeResistanceLevel(damageType));
-            stats.OnDamaged -= handler;
-            SpawnPopup(hitCollider, damage, isCritical, stats.IsGuarding,damageType, 
-                stats.StatData.attributeResistanceLevel(damageType));
+            stats.OnDamaged -= handler; // 即座に購読解除
             
+            // hitCollider が Destroy されていないかチェック
+            if (hitCollider == null) return;
+            
+            SpawnPopup(hitCollider, damage, isCritical, stats.IsGuarding, damageType,
+                stats.StatData.GetAttributeResistanceLevel(damageType));
         };
 
         stats.OnDamaged += handler;
     }
 
-    private void SpawnPopup(Collider hitCollider, int damage, bool isCritical, 
+    private void SpawnPopup(Collider hitCollider, int damage, bool isCritical,
         bool isGuarded, AttributeType damageType, ResistanceLevel resistanceLevel)
     {
-        
         var prefab = DamageNumberPopup.GetPrefab();
         if (prefab == null) return;
+
+        // hitCollider が Destroy されていないかチェック（念の為）
+        if (hitCollider == null) return;
 
         Vector3 spawnPos = hitCollider.bounds.center
             + Vector3.up * (hitCollider.bounds.extents.y + SpawnOffsetY)

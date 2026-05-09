@@ -59,13 +59,7 @@ public static class DamageCalculator
         AttributeType     attribute,
         CharacterStatData defenderStats)
     {
-        ResistanceLevel resistance = attribute switch
-        {
-            AttributeType.Slash  => defenderStats.SlashResistance,
-            AttributeType.Pierce => defenderStats.PierceResistance,
-            AttributeType.Strike => defenderStats.StrikeResistance,
-            _                    => ResistanceLevel.Normal
-        };
+        ResistanceLevel resistance = defenderStats.GetAttributeResistanceLevel(attribute);
 
         return resistance switch
         {

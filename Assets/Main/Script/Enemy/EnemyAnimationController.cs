@@ -127,7 +127,14 @@ public class EnemyAnimationController : MonoBehaviour
         foreach (TrackAsset track in asset.GetOutputTracks())
         {
             if (track is AnimationTrack)
+            {
                 _director.SetGenericBinding(track, _characterAnimator);
+            }
+            else if (track is HitBoxTrack)
+            {
+                // HitBoxTrack には敵のルート Transform をバインド
+                _director.SetGenericBinding(track, transform);
+            }
         }
     }
 }

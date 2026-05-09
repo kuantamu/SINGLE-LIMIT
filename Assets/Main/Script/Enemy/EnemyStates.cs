@@ -69,6 +69,7 @@ public class EnemyChaseState : EnemyState
 /// <summary>
 /// 攻撃ステート。
 /// モーション終了後インターバルを挟んで Chase か Attack に戻る。
+/// Timeline の Signal を通じてヒットボックスの有効・無効を制御する。
 /// </summary>
 public class EnemyAttackState : EnemyState
 {
@@ -116,14 +117,25 @@ public class EnemyAttackState : EnemyState
         }
     }
 
+    /// <summary>
+    /// Signal: 攻撃判定が有効になるタイミング。
+    /// Timeline 内の HitBoxClip が自動的に判定を生成するため、
+    /// ここではログに記録するだけ。実際の判定制御は HitBoxMixerBehaviour が行う。
+    /// </summary>
     private void HandleAttackActive()
     {
-        // TODO: ヒットボックスを有効化
+        // HitBoxTrack が Timeline 上で再生されているので、自動的にヒットボックスが機能する
+        // デバッグ用：敵の攻撃判定の有効フレーム
+        // Debug.Log($"[EnemyAttackState] {SM.gameObject.name} の攻撃判定が有効になりました");
     }
 
+    /// <summary>
+    /// Signal: 攻撃判定が無効になるタイミング。
+    /// </summary>
     private void HandleAttackEnd()
     {
-        // TODO: ヒットボックスを無効化
+        // HitBoxMixerBehaviour が Timeline の再生状態をチェックしているので自動制御
+        // Debug.Log($"[EnemyAttackState] {SM.gameObject.name} の攻撃判定が無効になりました");
     }
 
     private void HandleMotionEnd()
