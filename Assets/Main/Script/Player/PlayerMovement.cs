@@ -31,6 +31,10 @@ public class PlayerMovement : MonoBehaviour
     private float   _dodgeTimer;
     private Vector3 _dodgeVelocity;
     private bool    _isFast = false;
+
+    private bool _isKnockback;
+    private float _knockbackTimer;
+    private Vector3 _knockbackVelocity;
     #endregion
 
     private void Awake()
@@ -44,6 +48,14 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (_isKnockback)
+        {
+            _knockbackTimer -= Time.fixedDeltaTime;
+            if (_knockbackTimer <= 0f)
+                StopKnockback();
+            else
+                _horizontalVel = _knockbackVelocity;
+        }
         if (_isDodging)
         {
             _dodgeTimer -= Time.fixedDeltaTime;
@@ -163,5 +175,31 @@ public class PlayerMovement : MonoBehaviour
     {
         v.y = 0f;
         return v.normalized;
+    }
+
+    /// <summary>
+    /// ノックバックを開始する。EnemyKnockbackState.Enter() から呼ぶ。
+    /// </summary>
+    /// <param name="dir">ノックバック方向（正規化済み）</param>
+    /// <param name="distance">移動距離（m）</param>
+    /// <param name="duration">移動時間（秒）</param>
+    public void StartKnockback(Vector3 dir, float distance, float duration)
+    {
+        if (duration <= 0f) return;
+
+        float speed = distance / duration;
+        _knockbackVelocity = dir * speed;
+        _horizontalVel = _knockbackVelocity;
+        _isKnockback = true;
+        _knockbackTimer = duration;
+    }
+
+    /// <summary>ノックバックを停止する。EnemyKnockbackState.Exit() から呼ぶ。</summary>
+    public void StopKnockback()
+    {
+        _isKnockback = false;
+        _knockbackTimer = 0f;
+        _knockbackVelocity = Vector3.zero;
+        StopHorizontal();
     }
 }

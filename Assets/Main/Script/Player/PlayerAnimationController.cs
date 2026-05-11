@@ -28,6 +28,7 @@ public class PlayerAnimationController : MonoBehaviour
     [SerializeField] private TimelineAsset _dodgeTimeline;
     [SerializeField] private TimelineAsset _deathTimeline;
     [SerializeField] private TimelineAsset _specialTimeline;
+    [SerializeField] private TimelineAsset _staggerTimeline;
 
     [Header("Attack Timelines（コンボ順に並べる）")]
     [SerializeField] private TimelineAsset[] _attackTimelines;
@@ -92,6 +93,7 @@ public class PlayerAnimationController : MonoBehaviour
     public void PlayDeath() => Play(_deathTimeline, loop: false);
     public void PlaySpecial() => Play(_specialTimeline, loop: false);
     public void PlayHeavyAttack() => Play(_heavyAttackTimeline, loop: false);
+    public void PlayStagger() => Play(_staggerTimeline, loop: false);
     #endregion
 
     public void PlayAttack(int comboIndex)

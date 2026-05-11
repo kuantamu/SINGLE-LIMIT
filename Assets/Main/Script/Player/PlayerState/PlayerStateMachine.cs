@@ -30,6 +30,8 @@ public class PlayerStateMachine : MonoBehaviour
     public SpecialState Special { get; private set; }
     public HeavyAttackState HeavyAttack { get; private set; }
 
+    public PlayerKnockbackState Knockback { get; private set; }
+
     // ---- 現在のステート ----
     public PlayerState CurrentState { get; private set; }
 
@@ -53,6 +55,7 @@ public class PlayerStateMachine : MonoBehaviour
         Death  = new PlayerDeathState(this);
         Special = new SpecialState(this);
         HeavyAttack = new HeavyAttackState(this);
+        Knockback = new PlayerKnockbackState(this);
     }
 
     private void Start()
@@ -88,5 +91,13 @@ public class PlayerStateMachine : MonoBehaviour
         CurrentState?.Exit();
         CurrentState = next;
         CurrentState.Enter();
+    }
+
+    public void TriggerKnockback(Vector3 dir, float distance, float duration)
+    {
+        if (CurrentState is PlayerDeathState) return;
+        Debug.Log(Knockback);
+        Knockback.SetKnockback(dir, distance, duration);
+        TransitionTo(Knockback);
     }
 }

@@ -178,8 +178,8 @@ MonoBehaviour:
     m_ParentTrack: {fileID: 3063763825396005529}
     m_EaseInDuration: 0
     m_EaseOutDuration: 0
-    m_BlendInDuration: -1
-    m_BlendOutDuration: -1
+    m_BlendInDuration: 0
+    m_BlendOutDuration: 0
     m_MixInCurve:
       serializedVersion: 2
       m_Curve:
@@ -299,11 +299,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bae50517e0cf3344c8dc4b6e3d2f3f29, type: 3}
   m_Name: EffectExampleClip
   m_EditorClassIdentifier: Assembly-CSharp::EffectExampleClip
-  effectExample:
-    ParticleObj: {fileID: 6389406066330802590, guid: 5ef8d476ac4025a4e85cc5e7c5004889, type: 3}
-    Position: {x: 0, y: 1, z: 0}
-    Rotate: {x: -40, y: 90, z: 90}
-    Scale: {x: 0.5, y: 0.5, z: 0.5}
+  EffectPrefab: {fileID: 6389406066330802589, guid: 5ef8d476ac4025a4e85cc5e7c5004889, type: 3}
+  Position: {x: 0, y: 1, z: 0}
+  Rotation: {x: 50, y: 90, z: 90}
+  Scale: {x: 0.3, y: 0.5, z: 0.5}
 --- !u!114 &7315750237903979868
 MonoBehaviour:
   m_ObjectHideFlags: 1

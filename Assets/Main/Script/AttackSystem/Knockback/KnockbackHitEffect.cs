@@ -33,16 +33,21 @@ public class KnockbackHitEffect : IHitEffect
 
         dir.Normalize();
 
-        // 敵の EnemyStateMachine を取得してノックバック発動
-        var enemySM = hitCollider.GetComponentInParent<EnemyStateMachine>();
-        if (enemySM != null)
+        // 敵の StateMachine を取得してノックバック発動
+
+        var EnSM = hitCollider.GetComponentInParent<EnemyStateMachine>();
+        if (EnSM != null)
         {
-            enemySM.TriggerKnockback(dir, Settings.Distance, Settings.Duration);
+            EnSM.TriggerKnockback(dir, Settings.Distance, Settings.Duration);
+            return;
+        }
+        var PlSM = hitCollider.GetComponentInParent<PlayerStateMachine>();
+        if (PlSM != null)
+        {
+            PlSM.TriggerKnockback(dir, Settings.Distance, Settings.Duration);
             return;
         }
 
-        // プレイヤーへのノックバックは将来の拡張用に口だけ残す
-        // var playerSM = hitCollider.GetComponentInParent<PlayerStateMachine>();
-        // if (playerSM != null) { ... }
+
     }
 }

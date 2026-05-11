@@ -366,3 +366,48 @@ public class PlayerDeathState : PlayerState
     }
 }
 #endregion
+
+// ============================================================
+// EnemyKnockbackState
+// ============================================================
+
+/// <summary>
+/// ノックバックステート。
+/// Stagger モーションを流用しつつ、EnemyMovement.StartKnockback() で移動させる。
+/// モーション終了またはノックバック移動完了後に Chase に戻る。
+/// KnockbackHitEffect → EnemyStateMachine.TriggerKnockback() 経由で遷移する。
+/// </summary>
+public class PlayerKnockbackState : PlayerState
+{
+    private Vector3 _dir;
+    private float _distance;
+    private float _duration;
+
+    public PlayerKnockbackState(PlayerStateMachine sm) : base(sm) { }
+
+    /// <summary>遷移前にノックバックのパラメータをセットする。</summary>
+    public void SetKnockback(Vector3 dir, float distance, float duration)
+    {
+        _dir = dir;
+        _distance = distance;
+        _duration = duration;
+    }
+
+    public override void Enter()
+    {
+        SM.Movement.StartKnockback(_dir, _distance, _duration);
+        SM.AnimController.OnMotionEnd += HandleMotionEnd;
+        SM.AnimController.PlayStagger();
+    }
+
+    public override void Exit()
+    {
+        SM.AnimController.OnMotionEnd -= HandleMotionEnd;
+        SM.Movement.StopKnockback();
+    }
+
+    public override void Update() { } // ノックバック中は入力を受け付けない
+
+    private void HandleMotionEnd() => SM.TransitionTo(SM.Idle);
+}
+
