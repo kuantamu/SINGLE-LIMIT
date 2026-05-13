@@ -18,6 +18,7 @@ public class HitBoxClipEditor : Editor
     private SerializedProperty _damageNumber;
     private SerializedProperty _knockback;
     private SerializedProperty _skillPower;
+    private SerializedProperty _buffDebuffApplications;
 
     private void OnEnable()
     {
@@ -29,6 +30,7 @@ public class HitBoxClipEditor : Editor
         _damageNumber   = serializedObject.FindProperty("DamageNumber");
         _knockback      = serializedObject.FindProperty("Knockback");
         _skillPower      = serializedObject.FindProperty("SkillPower");
+        _buffDebuffApplications = serializedObject.FindProperty("BuffDebuffApplications");
     }
 
     public override void OnInspectorGUI()
@@ -68,6 +70,10 @@ public class HitBoxClipEditor : Editor
             EditorGUILayout.Space(4);
             EditorGUILayout.PropertyField(_skillPower, new GUIContent("SkillPower"), includeChildren: true);
 
+            EditorGUILayout.Space(4);
+            EditorGUILayout.LabelField("Buff/Debuff", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(_buffDebuffApplications, new GUIContent("Apply Settings"), includeChildren: true);
+
             serializedObject.ApplyModifiedProperties();
         }
         catch (System.Exception)
@@ -80,5 +86,6 @@ public class HitBoxClipEditor : Editor
     {
         serializedObject?.Dispose();
     }
+
 }
 #endif

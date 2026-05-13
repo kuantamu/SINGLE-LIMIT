@@ -317,6 +317,12 @@ MonoBehaviour:
     CriticalFontSize: 15
     GuardFontSize: 7
   Knockback:
-    Distance: 20
+    Distance: 1
     Duration: 0.3
-  SkillPower: 10
+  SkillPower: 1
+  BuffDebuffApplications:
+  - _buffType: 0
+    _multiplier: 1.3
+    _duration: 5
+    _overwriteMultiplier: 0
+    _overwriteDuration: 0

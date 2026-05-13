@@ -21,4 +21,12 @@ public struct DamageInfo
 
     /// <summary>スキル倍率</summary>
     public float SkillPower;
+
+    public float OutgoingDamageMultiplier;
+
+    public bool UseOutgoingDamageMultiplier;
+
+    public float IncomingDamageMultiplier;
+
+    public bool UseIncomingDamageMultiplier;
 }

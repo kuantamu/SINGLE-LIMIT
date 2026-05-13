@@ -37,7 +37,10 @@ public class DamageHitEffect : IHitEffect
             CriticalRate        = attackerStats != null ? attackerStats.StatData.CriticalRate : 0f,
             CriticalMultiplier  = attackerStats != null ? attackerStats.StatData.CriticalMultiplier : 1.5f,
             IsGuarded           = false, // CharacterStats.TakeDamage 内で上書きされる
-            SkillPower          = DamageEffectSkillPower
+            SkillPower          = DamageEffectSkillPower,
+            OutgoingDamageMultiplier = attackerStats != null ? attackerStats.OutgoingDamageMultiplier : 1f,
+            UseOutgoingDamageMultiplier = true,
+            IncomingDamageMultiplier = 1f
         };
 
         defenderStats.TakeDamage(info);

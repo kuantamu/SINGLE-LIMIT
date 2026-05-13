@@ -429,3 +429,9 @@ MonoBehaviour:
     Distance: -0.2
     Duration: 0.3
   SkillPower: 1
+  BuffDebuffApplications:
+  - _buffType: 1
+    _multiplier: 2
+    _duration: 5
+    _overwriteMultiplier: 0
+    _overwriteDuration: 0

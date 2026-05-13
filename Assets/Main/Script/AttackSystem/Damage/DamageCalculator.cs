@@ -39,6 +39,12 @@ public static class DamageCalculator
         isCritical = Random.value < info.CriticalRate;
 
         float skillMultiplier = info.SkillPower;
+        float outgoingMultiplier = info.UseOutgoingDamageMultiplier
+            ? Mathf.Max(0f, info.OutgoingDamageMultiplier)
+            : 1f;
+        float incomingMultiplier = info.UseIncomingDamageMultiplier
+            ? Mathf.Max(0f, info.IncomingDamageMultiplier)
+            : 1f;
 
         // 属性倍率
         float attrMultiplier = GetAttributeMultiplier(info.Attribute, defenderStats);
@@ -49,7 +55,13 @@ public static class DamageCalculator
         // 防御倍率
         float guardMultiplier = info.IsGuarded ? GuardDamageRate : 1.0f;
 
-        float raw = info.AttackPower * attrMultiplier * critMultiplier * guardMultiplier * skillMultiplier;
+        float raw = info.AttackPower
+            * attrMultiplier
+            * critMultiplier
+            * guardMultiplier
+            * skillMultiplier
+            * outgoingMultiplier
+            * incomingMultiplier;
 
         return Mathf.Max(0, Mathf.RoundToInt(raw));
     }

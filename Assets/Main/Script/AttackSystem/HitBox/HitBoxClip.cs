@@ -35,6 +35,9 @@ public class HitBoxClip : PlayableAsset, ITimelineClipAsset
     [Header("技威力倍率設定")]
     public float SkillPower;
 
+    [Header("Buff/Debuff Apply Settings")]
+    public BuffDebuffApplication[] BuffDebuffApplications;
+
     public ClipCaps clipCaps => ClipCaps.None;
 
     public override Playable CreatePlayable(PlayableGraph graph, GameObject owner)
@@ -53,6 +56,10 @@ public class HitBoxClip : PlayableAsset, ITimelineClipAsset
         {
             DamageNumber,
             new DamageHitEffect { DamageEffectSkillPower = SkillPower },
+            new BuffDebuffHitEffect
+            {
+                Applications = BuffDebuffApplications
+            },
             new KnockbackHitEffect { Settings = Knockback },
             
         };

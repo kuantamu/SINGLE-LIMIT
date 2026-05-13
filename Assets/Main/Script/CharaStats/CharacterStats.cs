@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -14,6 +15,8 @@ public class CharacterStats : MonoBehaviour
 {
     [Header("ステータスデータ")]
     [SerializeField] private CharacterStatData _statData;
+
+    private readonly List<DamageBuff> _damageBuffs = new List<DamageBuff>();
 
     // ---- プロパティ ----
 
@@ -31,6 +34,10 @@ public class CharacterStats : MonoBehaviour
     /// <summary>現在防御アクション中か。GuardState.Enter/Exit で更新する。</summary>
     public bool IsGuarding { get; set; }
 
+    public float OutgoingDamageMultiplier => GetDamageMultiplier(DamageBuffTarget.OutgoingDamage);
+
+    public float IncomingDamageMultiplier => GetDamageMultiplier(DamageBuffTarget.IncomingDamage);
+
     // ---- イベント ----
 
     /// <summary>ダメージを受けた時のイベント。（実ダメージ量, クリティカルか, 攻撃の属性）</summary>
@@ -38,6 +45,8 @@ public class CharacterStats : MonoBehaviour
 
     /// <summary>HP が 0 になった時のイベント</summary>
     public event Action OnDeath;
+
+    public event Action OnDamageBuffsChanged;
 
     // ---- Unity ライフサイクル ----
 
@@ -49,6 +58,11 @@ public class CharacterStats : MonoBehaviour
             return;
         }
         CurrentHP = _statData.MaxHP;
+    }
+
+    private void Update()
+    {
+        TickDamageBuffs(Time.deltaTime);
     }
 
     // ---- 公開 API ----
@@ -64,6 +78,8 @@ public class CharacterStats : MonoBehaviour
 
         // 防御中フラグを DamageInfo に反映
         info.IsGuarded = IsGuarding;
+        info.IncomingDamageMultiplier = IncomingDamageMultiplier;
+        info.UseIncomingDamageMultiplier = true;
 
         // ダメージ計算
         int damage = DamageCalculator.Calculate(info, _statData, out bool isCritical);
@@ -77,5 +93,96 @@ public class CharacterStats : MonoBehaviour
         // 死亡判定
         if (CurrentHP <= 0)
             OnDeath?.Invoke();
+    }
+
+    public DamageBuff AddDamageBuff(
+        DamageBuffTarget target,
+        float multiplier,
+        float duration = -1f,
+        string id = null,
+        bool overwriteMultiplier = true,
+        bool overwriteDuration = true)
+    {
+        DamageBuff existing = FindDamageBuff(id);
+        if (existing != null)
+        {
+            existing.Refresh(multiplier, duration, overwriteMultiplier, overwriteDuration);
+            OnDamageBuffsChanged?.Invoke();
+            return existing;
+        }
+
+        DamageBuff buff = new DamageBuff(id, target, multiplier, duration);
+        _damageBuffs.Add(buff);
+        OnDamageBuffsChanged?.Invoke();
+        return buff;
+    }
+
+    public bool RemoveDamageBuff(string id)
+    {
+        if (string.IsNullOrEmpty(id)) return false;
+
+        for (int i = _damageBuffs.Count - 1; i >= 0; i--)
+        {
+            if (_damageBuffs[i].Id != id) continue;
+
+            _damageBuffs.RemoveAt(i);
+            OnDamageBuffsChanged?.Invoke();
+            return true;
+        }
+
+        return false;
+    }
+
+    public void ClearDamageBuffs()
+    {
+        if (_damageBuffs.Count == 0) return;
+
+        _damageBuffs.Clear();
+        OnDamageBuffsChanged?.Invoke();
+    }
+
+    private void TickDamageBuffs(float deltaTime)
+    {
+        if (_damageBuffs.Count == 0) return;
+
+        bool changed = false;
+        for (int i = _damageBuffs.Count - 1; i >= 0; i--)
+        {
+            _damageBuffs[i].Tick(deltaTime);
+            if (!_damageBuffs[i].IsExpired) continue;
+
+            _damageBuffs.RemoveAt(i);
+            changed = true;
+        }
+
+        if (changed)
+            OnDamageBuffsChanged?.Invoke();
+    }
+
+    private float GetDamageMultiplier(DamageBuffTarget target)
+    {
+        float multiplier = 1f;
+        for (int i = 0; i < _damageBuffs.Count; i++)
+        {
+            DamageBuff buff = _damageBuffs[i];
+            if (buff.Target != target) continue;
+
+            multiplier *= buff.Multiplier;
+        }
+
+        return multiplier;
+    }
+
+    private DamageBuff FindDamageBuff(string id)
+    {
+        if (string.IsNullOrEmpty(id)) return null;
+
+        for (int i = 0; i < _damageBuffs.Count; i++)
+        {
+            if (_damageBuffs[i].Id == id)
+                return _damageBuffs[i];
+        }
+
+        return null;
     }
 }

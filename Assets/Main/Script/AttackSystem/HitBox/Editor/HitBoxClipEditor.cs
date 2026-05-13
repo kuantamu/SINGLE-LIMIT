@@ -15,6 +15,7 @@ public class HitBoxClipEditor : Editor
     private SerializedProperty _hitLayer;
     private SerializedProperty _hitPointEffect;
     private SerializedProperty _damageNumber;
+    private SerializedProperty _buffDebuffApplications;
 
     private void OnEnable()
     {
@@ -24,6 +25,7 @@ public class HitBoxClipEditor : Editor
         _hitLayer       = serializedObject.FindProperty("HitLayer");
         _hitPointEffect = serializedObject.FindProperty("HitPointEffect");
         _damageNumber   = serializedObject.FindProperty("DamageNumber");
+        _buffDebuffApplications = serializedObject.FindProperty("BuffDebuffApplications");
     }
 
     public override void OnInspectorGUI()
@@ -57,6 +59,10 @@ public class HitBoxClipEditor : Editor
             EditorGUILayout.LabelField("ダメージ数字", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(_damageNumber, new GUIContent("Damage Number"), includeChildren: true);
 
+            EditorGUILayout.Space(4);
+            EditorGUILayout.LabelField("Buff/Debuff", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(_buffDebuffApplications, new GUIContent("Apply Settings"), includeChildren: true);
+
             serializedObject.ApplyModifiedProperties();
         }
         catch (System.Exception)
@@ -69,5 +75,6 @@ public class HitBoxClipEditor : Editor
     {
         serializedObject?.Dispose();
     }
+
 }
 #endif
