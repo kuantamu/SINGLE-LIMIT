@@ -9,8 +9,8 @@ public class BuffDebuffApplication
     [SerializeField] private DamageBuffTarget _buffType = DamageBuffTarget.IncomingDamage;
     [SerializeField] private float _multiplier = 1f;
     [SerializeField] private float _duration = 5f;
-    [SerializeField] private bool _overwriteMultiplier = true;
-    [SerializeField] private bool _overwriteDuration = true;
+    [InspectorName("Œø‰Ê—Ê‚ğã‘‚«"),SerializeField] private bool _overwriteMultiplier = true;
+    [InspectorName("ŠúŠÔ‚ğã‘‚«"), SerializeField] private bool _overwriteDuration = true;
 
     public DamageBuffTarget BuffType => _buffType;
     public float Multiplier => _multiplier;

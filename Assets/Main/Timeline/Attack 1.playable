@@ -431,7 +431,7 @@ MonoBehaviour:
   SkillPower: 1
   BuffDebuffApplications:
   - _buffType: 1
-    _multiplier: 2
-    _duration: 5
+    _multiplier: 1.5
+    _duration: 10
     _overwriteMultiplier: 0
     _overwriteDuration: 0
