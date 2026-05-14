@@ -3,10 +3,6 @@ using UnityEngine;
 /// <summary>
 /// CharacterStats.OnDeath イベントを状態機械の TriggerDeath() に接続するコンポーネント。
 /// プレイヤー・敵ともに同じ GameObject にアタッチする。
-///
-/// Awake() で CharacterStats.OnDeath を購読し、
-/// 発火時にプレイヤーなら PlayerStateMachine.TriggerDeath()、
-/// 敵なら EnemyStateMachine.TriggerDeath() を呼ぶ。
 /// </summary>
 [RequireComponent(typeof(CharacterStats))]
 public class DeathHandler : MonoBehaviour
