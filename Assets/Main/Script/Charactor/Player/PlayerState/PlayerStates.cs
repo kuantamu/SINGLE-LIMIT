@@ -367,6 +367,7 @@ public class PlayerDeathState : PlayerState
 }
 #endregion
 
+#region ノックバック（怯み）ステート
 // ============================================================
 // EnemyKnockbackState
 // ============================================================
@@ -411,3 +412,4 @@ public class PlayerKnockbackState : PlayerState
     private void HandleMotionEnd() => SM.TransitionTo(SM.Idle);
 }
 
+#endregion

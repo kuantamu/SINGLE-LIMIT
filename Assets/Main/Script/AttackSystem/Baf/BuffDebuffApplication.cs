@@ -2,6 +2,9 @@ using System;
 using UnityEngine;
 using UnityEngine.Serialization;
 
+/// <summary>
+/// バフデバフの効果量ステータス
+/// </summary>
 [Serializable]
 public class BuffDebuffApplication
 {

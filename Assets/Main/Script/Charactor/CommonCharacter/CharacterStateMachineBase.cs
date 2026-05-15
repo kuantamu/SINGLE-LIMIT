@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
-
+/// <summary>
+/// キャラクターの基礎ステートマシーン
+/// </summary>
 public abstract class CharacterStateMachineBase : MonoBehaviour, IKnockbackReceiver
 {
     protected CharacterStats Stats { get; private set; }
@@ -33,9 +35,12 @@ public abstract class CharacterStateMachineBase : MonoBehaviour, IKnockbackRecei
     }
 
     protected virtual void OnBeforeStateUpdate() { }
-
+    //ステート登録
     protected abstract void InitializeStateMachine();
+    //最初のステート
     protected abstract ICharacterState GetInitialState();
+
+    //死亡するステート
     protected abstract ICharacterState GetDeathState();
 
     //ステートを呼び出す。
@@ -48,6 +53,7 @@ public abstract class CharacterStateMachineBase : MonoBehaviour, IKnockbackRecei
         CurrentState.Enter();
     }
 
+    //
     public virtual void TriggerDeath()
     {
         TransitionTo(GetDeathState());
