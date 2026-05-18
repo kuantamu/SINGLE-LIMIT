@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 //キャラクターの基底移動スクリプト
 [RequireComponent(typeof(Rigidbody))]
@@ -52,6 +52,16 @@ public abstract class CharacterMovementBase : MonoBehaviour
         Rb.linearVelocity = vel;
     }
 
+    /// <summary>
+    /// 攻撃アシストシステムから速度を上書きする。
+    /// ノックバック中は効果がない（ノックバックが優先される）。
+    /// </summary>
+    public void SetAssistVelocity(Vector3 vel)
+    {
+        if (_isKnockback) return;
+        HorizontalVelocity = vel;
+    }
+
     public void StartKnockback(Vector3 dir, float distance, float duration)
     {
         if (duration <= 0f) return;
@@ -74,10 +84,16 @@ public abstract class CharacterMovementBase : MonoBehaviour
     protected void FaceDirection(Vector3 dir, float rotationSpeed)
     {
         if (dir == Vector3.zero) return;
-
-        Quaternion target = Quaternion.LookRotation(dir);
-        transform.rotation = Quaternion.RotateTowards(
-            transform.rotation, target, rotationSpeed * Time.deltaTime);
+        if (rotationSpeed >= 3000)
+        {
+            transform.rotation = Quaternion.LookRotation(dir);
+        }
+        else
+        {
+            Quaternion target = Quaternion.LookRotation(dir);
+            transform.rotation = Quaternion.RotateTowards(
+                transform.rotation, target, rotationSpeed * Time.deltaTime);
+        }
     }
 
     protected Vector3 FlattenAndNormalize(Vector3 v)

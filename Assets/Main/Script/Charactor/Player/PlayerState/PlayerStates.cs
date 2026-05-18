@@ -211,8 +211,8 @@ public class AttackState : PlayerState
         SM.AnimController.OnBufferOpen       += HandleBufferOpen;
         SM.AnimController.OnCancellableFrame += HandleCancellableFrame;
         SM.AnimController.OnMotionEnd        += HandleMotionEnd;
-
         SM.AnimController.PlayAttack(_comboIndex);
+        SM.Movement.FaceTarget();
     }
 
     public override void Exit()

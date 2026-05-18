@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class PlayerMovement : CharacterMovementBase
 {
@@ -19,6 +20,7 @@ public class PlayerMovement : CharacterMovementBase
     [SerializeField] private float _dodgeActiveDuration = 0.3f;
 
     private Camera _cam;
+    private ThirdPersonCamera _thirdPersonCamera;
     private bool _isDodging;
     private float _dodgeTimer;
     private Vector3 _dodgeVelocity;
@@ -28,6 +30,7 @@ public class PlayerMovement : CharacterMovementBase
     {
         base.Awake();
         _cam = Camera.main;
+        _thirdPersonCamera = Camera.main.GetComponent<ThirdPersonCamera>();
     }
 
     protected override void FixedUpdate()
@@ -96,6 +99,18 @@ public class PlayerMovement : CharacterMovementBase
         if (camForward.sqrMagnitude < 0.001f) return;
 
         FaceDirection(camForward.normalized, _rotationSpeed);
+    }
+
+    public void FaceTarget()
+    {
+        Transform target = _thirdPersonCamera.lockOnTarget();
+        if (target == null) return;
+
+        Vector3 forward = target.position - transform.position;
+        forward.y = 0f;
+        if (forward.sqrMagnitude < 0.001f) return;
+
+        FaceDirection(forward.normalized, 10000);
     }
 
     private Vector3 CameraRelativeDirection(Vector2 input)
