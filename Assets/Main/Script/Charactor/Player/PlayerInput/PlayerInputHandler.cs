@@ -21,6 +21,8 @@ public class PlayerInputHandler : MonoBehaviour
     /// <summary>速く移動する</summary>
     public bool IsFastSpeedHeld { get; private set; }
 
+    public bool IsDodgePush { get; private set; }
+
     /// <summary>
     /// 通常攻撃が確定した瞬間か。
     /// 左クリックを離した時、長押し時間が閾値未満なら true。
@@ -72,6 +74,7 @@ public class PlayerInputHandler : MonoBehaviour
         IsAttackHeld    = Input.GetMouseButton(0);
         SpecialPressed  = Input.GetKeyDown(KeyCode.Q);
         IsFastSpeedHeld = Input.GetKey(KeyCode.LeftShift);
+        IsDodgePush     = Input.GetKeyDown(KeyCode.LeftShift);
 
         // 押した瞬間にタイマーとフラグをリセット
         if (Input.GetMouseButtonDown(0))

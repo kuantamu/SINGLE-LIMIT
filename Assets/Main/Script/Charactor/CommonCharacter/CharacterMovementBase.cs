@@ -37,10 +37,12 @@ public abstract class CharacterMovementBase : MonoBehaviour
 
     protected void ApplyHorizontalVelocity()
     {
+
         Vector3 vel = Rb.linearVelocity;
         vel.x = HorizontalVelocity.x;
         vel.z = HorizontalVelocity.z;
         Rb.linearVelocity = vel;
+
     }
 
     public void StopHorizontal()

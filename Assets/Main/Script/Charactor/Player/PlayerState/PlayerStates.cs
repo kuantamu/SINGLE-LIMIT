@@ -94,11 +94,14 @@ public class GuardState : PlayerState
 
         // カメラ前方を向く
         SM.Movement.FaceCamera();
-
-        if (SM.InputHandler.IsMoving && !SM.IsDodgeOnCooldown)
+        SM.Movement.GuardMove(SM.InputHandler.MoveInput);
+        if (SM.InputHandler.IsDodgePush && SM.InputHandler.IsMoving)
         {
+            SM.InputHandler.CancelBuffer();
             SM.TransitionTo(SM.Dodge);
+            return;
         }
+
     }
 }
 #endregion

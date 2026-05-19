@@ -55,12 +55,17 @@ public class PlayerMovement : CharacterMovementBase
         float speed = _isFast ? _fastSpeed : _moveSpeed;
         Vector3 target = dir * speed;
 
-        float accel = input.magnitude > 0.1f ? _acceleration : _deceleration;
-        HorizontalVelocity = Vector3.MoveTowards(
-            HorizontalVelocity, target, accel * Time.deltaTime);
+        HorizontalVelocity = target;
 
         if (dir != Vector3.zero)
             FaceDirection(dir, _rotationSpeed);
+    }
+
+    public void GuardMove(Vector2 input)
+    {
+        Vector3 dir = CameraRelativeDirection(input);
+        Vector3 target = dir * _moveSpeed;
+        HorizontalVelocity = target;
     }
 
     public void FastSpeed(bool f)
