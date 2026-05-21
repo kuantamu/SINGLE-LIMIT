@@ -6,8 +6,6 @@ public class PlayerMovement : CharacterMovementBase
     #region　変数
     [Header("Move")]
     [SerializeField] private float _moveSpeed = 5f;
-    [SerializeField] private float _acceleration = 20f;
-    [SerializeField] private float _deceleration = 30f;
 
     [Header("Fast Move")]
     [SerializeField] private float _fastSpeed = 15f;
@@ -73,18 +71,21 @@ public class PlayerMovement : CharacterMovementBase
         _isFast = f;
     }
 
-    public void StartDodgeMove(Vector2 input)
+    public void StartDodgeMove(Vector2 input, bool stayInPlace = false, float activeDuration = -1f)
     {
+        float duration = activeDuration > 0f ? activeDuration : _dodgeActiveDuration;
         Vector3 dir = CameraRelativeDirection(input);
+        if (stayInPlace)
+            dir = Vector3.zero;
         if (dir == Vector3.zero)
             dir = transform.forward;
 
-        float speed = _dodgeDistance / _dodgeActiveDuration;
+        float speed = stayInPlace ? 0f : _dodgeDistance / duration;
         _dodgeVelocity = dir * speed;
         HorizontalVelocity = _dodgeVelocity;
 
         _isDodging = true;
-        _dodgeTimer = _dodgeActiveDuration;
+        _dodgeTimer = duration;
     }
 
     public void StopDodge()

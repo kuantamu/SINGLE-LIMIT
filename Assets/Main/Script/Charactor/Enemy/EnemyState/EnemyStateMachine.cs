@@ -60,13 +60,16 @@ public class EnemyStateMachine : CharacterStateMachineBase
     public void TriggerStagger()
     {
         if (IsDeadState) return;
+        if (CharStats != null && !CharStats.CanBeKnockedBack) return;
         TransitionTo(Stagger);
     }
 
     public override void TriggerKnockback(Vector3 dir, float distance, float duration)
     {
         if (IsDeadState) return;
+        if (CharStats != null && !CharStats.CanBeKnockedBack) return;
 
+        CharStats?.SetTimedHitReactionState(HitReactionState.Down, duration);
         Knockback.SetKnockback(dir, distance, duration);
         TransitionTo(Knockback);
     }

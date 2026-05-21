@@ -52,6 +52,15 @@ public abstract class TimelineAnimationControllerBase : MonoBehaviour
 
         BindTracks(asset);
         Director.Play();
+        SetPlaybackSpeed(1f);
+    }
+
+    public void SetPlaybackSpeed(float speed)
+    {
+        if (Director == null || !Director.playableGraph.IsValid()) return;
+        int rootCount = Director.playableGraph.GetRootPlayableCount();
+        for (int i = 0; i < rootCount; i++)
+            Director.playableGraph.GetRootPlayable(i).SetSpeed(Mathf.Max(0.01f, speed));
     }
 
     protected virtual void BindTracks(TimelineAsset asset)

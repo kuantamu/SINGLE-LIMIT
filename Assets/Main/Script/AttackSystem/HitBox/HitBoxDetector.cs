@@ -41,6 +41,10 @@ public class HitBoxDetector : MonoBehaviour
         // 自分自身（攻撃者の階層）への誤検知を除外
         if (_ownerRoot != null && other.transform.IsChildOf(_ownerRoot)) return;
 
+        // 無敵中のキャラクターはヒット履歴にも残さず、完全に当たらない扱いにする。
+        CharacterStats stats = other.GetComponentInParent<CharacterStats>();
+        if (stats != null && !stats.CanReceiveHit) return;
+
         // 再ヒット間隔チェック
         if (_hitTimes.TryGetValue(other, out float lastTime))
         {

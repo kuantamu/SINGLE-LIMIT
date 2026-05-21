@@ -91,17 +91,21 @@ public class GuardState : PlayerState
             SM.TransitionTo(SM.Idle);
             return;
         }
-
+        
         // カメラ前方を向く
         SM.Movement.FaceCamera();
         SM.Movement.GuardMove(SM.InputHandler.MoveInput);
-        if (SM.InputHandler.IsDodgePush && SM.InputHandler.IsMoving)
+        if (SM.InputHandler.IsDodgePush)
         {
             SM.InputHandler.CancelBuffer();
             SM.TransitionTo(SM.Dodge);
+            if (!SM.InputHandler.IsMoving)
+            { 
+                SM.Dodge.RequestSpotDodge(); 
+            }
+            
             return;
         }
-
     }
 }
 #endregion
@@ -143,18 +147,32 @@ public class DodgeState : PlayerState
     private Phase   _phase;
     private float   _phaseTimer;
     private Vector2 _dodgeInput;
+    private bool    _isSpotDodge;
+    private int     _penaltyLevel;
+    private float   _lagMultiplier = 1f;
+    private float   _activeDuration;
+    private bool    _forceSpotDodge;
 
     public DodgeState(PlayerStateMachine sm) : base(sm) {}
 
+    public void RequestSpotDodge() => _forceSpotDodge = true;
+
     public override void Enter()
     {
-        _dodgeInput = SM.InputHandler.MoveInput;
+        _penaltyLevel = SM.RegisterDodgeUse();
+        _lagMultiplier = SM.GetDodgeLagMultiplier(_penaltyLevel);
+        _activeDuration = SM.DodgeConfig.ActiveDuration * _lagMultiplier;
+        _isSpotDodge = _forceSpotDodge;
+        _forceSpotDodge = false;
+        _dodgeInput = _isSpotDodge ? Vector2.zero : SM.InputHandler.MoveInput;
         SM.AnimController.PlayDodge();
+        SM.AnimController.SetPlaybackSpeed(1f / _lagMultiplier);
         EnterPhase(Phase.PreLag);
     }
 
     public override void Exit()
     {
+        SM.AnimController.SetPlaybackSpeed(1f);
         SM.Movement.StopDodge();
         SM.DodgeCooldownTimer = SM.DodgeConfig.Cooldown;
     }
@@ -179,15 +197,19 @@ public class DodgeState : PlayerState
         switch (next)
         {
             case Phase.PreLag:
-                _phaseTimer = SM.DodgeConfig.PreLag;
+                _phaseTimer = SM.DodgeConfig.PreLag * _lagMultiplier;
                 SM.Movement.StopHorizontal();
                 break;
             case Phase.Active:
-                _phaseTimer = SM.DodgeConfig.ActiveDuration;
-                SM.Movement.StartDodgeMove(_dodgeInput);
+                _phaseTimer = _activeDuration;
+                // 回避の実移動中だけ無敵にする。連続回避段階が高いほど無敵時間は短くなる。
+                SM.CharStats?.SetTimedHitReactionState(
+                    HitReactionState.Invincible,
+                    SM.GetDodgeInvincibleDuration(_penaltyLevel));
+                SM.Movement.StartDodgeMove(_dodgeInput, _isSpotDodge, _activeDuration);
                 break;
             case Phase.PostLag:
-                _phaseTimer = SM.DodgeConfig.PostLag;
+                _phaseTimer = SM.DodgeConfig.PostLag * _lagMultiplier;
                 break;
         }
     }

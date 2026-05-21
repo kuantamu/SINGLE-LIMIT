@@ -29,4 +29,7 @@ public struct DamageInfo
     public float IncomingDamageMultiplier;
 
     public bool UseIncomingDamageMultiplier;
+
+    /// <summary>ダウン中など、防御側の本来の耐性を無視して弱点扱いにする。</summary>
+    public bool ForceWeakAttribute;
 }

@@ -41,8 +41,10 @@ public class DamageNumberEffect : IHitEffect
             // hitCollider が Destroy されていないかチェック
             if (hitCollider == null) return;
             
+            // ダウン中はダメージ計算と表示の両方で弱点扱いにする。
+            ResistanceLevel resistanceLevel = stats.GetEffectiveAttributeResistanceLevel(damageType);
             SpawnPopup(hitCollider, damage, isCritical, stats.IsGuarding, damageType,
-                stats.StatData.GetAttributeResistanceLevel(damageType));
+                resistanceLevel);
         };
 
         stats.OnDamaged += handler;

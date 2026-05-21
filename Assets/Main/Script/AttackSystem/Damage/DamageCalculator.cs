@@ -46,8 +46,10 @@ public static class DamageCalculator
             ? Mathf.Max(0f, info.IncomingDamageMultiplier)
             : 1f;
 
-        // 属性倍率
-        float attrMultiplier = GetAttributeMultiplier(info.Attribute, defenderStats);
+        // ダウン中は全属性を弱点として扱う。
+        float attrMultiplier = info.ForceWeakAttribute
+            ? WeakMultiplier
+            : GetAttributeMultiplier(info.Attribute, defenderStats);
 
         // クリティカル倍率
         float critMultiplier = isCritical ? info.CriticalMultiplier : 1.0f;
