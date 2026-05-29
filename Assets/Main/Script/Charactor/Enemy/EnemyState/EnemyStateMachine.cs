@@ -29,6 +29,14 @@ public class EnemyStateMachine : CharacterStateMachineBase
     public float AttackInterval => _attackInterval;
     public Transform PlayerTransform => Detector.DetectedPlayer;
 
+    public void ApplyNpcType(NpcTypeData type)
+    {
+        if (type == null) return;
+
+        _attackRange = type.AttackRange;
+        _attackInterval = type.AttackInterval;
+    }
+
     public float DistanceToPlayer
     {
         get

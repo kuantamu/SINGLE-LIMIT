@@ -12,6 +12,15 @@ public class EnemyMovement : CharacterMovementBase
     [SerializeField] private float _rotationSpeed = 360f;
     #endregion
 
+    public void ApplyNpcType(NpcTypeData type)
+    {
+        if (type == null) return;
+
+        _moveSpeed = type.MoveSpeed;
+        _acceleration = type.Acceleration;
+        _rotationSpeed = type.RotationSpeed;
+    }
+
     //移動処理
     public void MoveToward(Vector3 targetPos)
     {

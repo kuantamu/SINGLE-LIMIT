@@ -45,6 +45,18 @@ public class EnemyDetector : MonoBehaviour
     /// <summary>プレイヤーを検知しているか</summary>
     public bool IsPlayerDetected => DetectedPlayer != null;
 
+    public void ApplyNpcType(NpcTypeData type)
+    {
+        if (type == null) return;
+
+        _detectionRange = type.DetectionRange;
+        _fieldOfView = type.FieldOfView;
+        _detectionLayer = type.DetectionLayer;
+        _obstacleLayer = type.ObstacleLayer;
+        _useLineOfSight = type.UseLineOfSight;
+        _updateInterval = type.DetectionUpdateInterval;
+    }
+
     // ---- 内部 ----
     private float _intervalTimer;
     private readonly Collider[] _overlapResults = new Collider[8];
@@ -71,7 +83,7 @@ public class EnemyDetector : MonoBehaviour
         for (int i = 0; i < count; i++)
         {
             Collider col = _overlapResults[i];
-            if (!col.CompareTag("Player")) continue;
+            //if (!col.CompareTag("Player") || !col.CompareTag("Enemy")) continue;
 
             // プレイヤーのルート Transform を取得
             // コライダーが子オブジェクトにある場合でも、プレイヤーのルート位置を計算する

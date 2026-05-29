@@ -303,7 +303,7 @@ MonoBehaviour:
   HitInterval: 1
   HitLayer:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 384
   HitPointEffect: {fileID: 11400000, guid: 152e3deda014f5b47bd428aaab86bb85, type: 2}
   DamageNumber:
     SpawnOffsetY: 0.5

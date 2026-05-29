@@ -45,6 +45,15 @@ public class CharacterStats : MonoBehaviour
 
     public CharacterStatData StatData => _statData;
 
+    public void SetStatData(CharacterStatData statData, bool resetHp)
+    {
+        if (statData == null) return;
+
+        _statData = statData;
+        if (resetHp)
+            CurrentHP = _statData.MaxHP;
+    }
+
     /// <summary>現在の HP</summary>
     public int CurrentHP { get; private set; }
 
