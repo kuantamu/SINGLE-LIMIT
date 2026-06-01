@@ -37,6 +37,8 @@ public class EnemyDetector : MonoBehaviour
     [Tooltip("デバッグ用の Gizmo を表示する")]
     [SerializeField] private bool _drawGizmos = true;
 
+    [SerializeField] private CharacterStats _characterStats;
+
     // ---- プロパティ ----
 
     /// <summary>現在検知しているプレイヤーの Transform（未検知なら null）。</summary>
@@ -83,7 +85,8 @@ public class EnemyDetector : MonoBehaviour
         for (int i = 0; i < count; i++)
         {
             Collider col = _overlapResults[i];
-            //if (!col.CompareTag("Player") || !col.CompareTag("Enemy")) continue;
+            if (_characterStats.GetEnemyFaction() == col.GetComponent<CharacterStats>().GetFaction()) {
+            }
 
             // プレイヤーのルート Transform を取得
             // コライダーが子オブジェクトにある場合でも、プレイヤーのルート位置を計算する

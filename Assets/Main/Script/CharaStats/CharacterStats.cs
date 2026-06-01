@@ -25,6 +25,12 @@ public class CharacterStats : MonoBehaviour
     [Header("ステータスデータ")]
     [SerializeField] private CharacterStatData _statData;
 
+    [Header("Faction")]
+    [SerializeField] private CharacterFaction _faction = CharacterFaction.Other;
+    [SerializeField] private bool _useDefaultFactionRelations = true;
+    [SerializeField] private CharacterFactionMask _hostileFactions = CharacterFactionMask.None;
+    [SerializeField] private CharacterFactionMask _attackableFactions = CharacterFactionMask.None;
+
     [Header("Hit Reaction Debug")]
     [SerializeField] private HitReactionState _hitReactionState = HitReactionState.Normal;
     [SerializeField] private Color _invincibleBlinkColor = Color.cyan;
@@ -44,7 +50,17 @@ public class CharacterStats : MonoBehaviour
     // ---- プロパティ ----
 
     public CharacterStatData StatData => _statData;
+    public CharacterFaction Faction => _faction;
+    public CharacterFactionMask HostileFactions => _useDefaultFactionRelations
+        ? CharacterFactionRules.DefaultHostileFactions(_faction)
+        : _hostileFactions;
+    public CharacterFactionMask AttackableFactions => _useDefaultFactionRelations
+        ? CharacterFactionRules.DefaultAttackableFactions(_faction)
+        : _attackableFactions;
 
+
+    public CharacterFaction GetFaction() {  return _faction; }
+    public CharacterFactionMask GetEnemyFaction() { return _hostileFactions; }
     public void SetStatData(CharacterStatData statData, bool resetHp)
     {
         if (statData == null) return;
@@ -72,6 +88,8 @@ public class CharacterStats : MonoBehaviour
     public bool IsDown => _hitReactionState == HitReactionState.Down;
     public bool CanReceiveHit => !IsDead && !IsInvincible;
     public bool CanBeKnockedBack => !IsDead && !IsInvincible && !IsArmor;
+    public bool IsHostileTo(CharacterStats target) => CharacterFactionRules.IsHostile(this, target);
+    public bool CanAttack(CharacterStats target) => CharacterFactionRules.CanAttack(this, target);
 
     public float OutgoingDamageMultiplier => GetDamageMultiplier(DamageBuffTarget.OutgoingDamage);
 
@@ -114,6 +132,14 @@ public class CharacterStats : MonoBehaviour
     /// ダメージを受ける。
     /// DamageHitEffect から呼ぶ。
     /// </summary>
+    private void OnValidate()
+    {
+        if (!_useDefaultFactionRelations) return;
+
+        _hostileFactions = CharacterFactionRules.DefaultHostileFactions(_faction);
+        _attackableFactions = CharacterFactionRules.DefaultAttackableFactions(_faction);
+    }
+
     public void TakeDamage(DamageInfo info)
     {
         if (IsDead) return;

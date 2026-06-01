@@ -65,11 +65,14 @@ public class LockOnController : MonoBehaviour
 
     /// <summary>ターゲットリストの更新タイマー</summary>
     private float _refreshTimer;
+    private CharacterStats _ownerStats;
     #endregion
     #endregion
 
     private void Awake()
     {
+        _ownerStats = GetComponentInParent<CharacterStats>();
+
         // SphereCollider をトリガーとして初期化し、半径をロックオン範囲に設定
         _rangeCollider = GetComponent<SphereCollider>();
         _rangeCollider.isTrigger = true;
@@ -208,7 +211,7 @@ public class LockOnController : MonoBehaviour
             Transform target = LockOnTargetUtility.GetTargetRoot(_overlapResults[i]);
 
             // 無効な敵や重複はスキップ
-            if (!LockOnTargetUtility.IsValidEnemy(target)) continue;
+            if (!LockOnTargetUtility.IsValidEnemy(target, _ownerStats)) continue;
             if (_targets.Contains(target)) continue;
 
             _targets.Add(target);
@@ -264,7 +267,7 @@ public class LockOnController : MonoBehaviour
     /// <returns>引き続きロックオン可能なら true</returns>
     private bool IsLockOnTargetValid(Transform target)
     {
-        if (!LockOnTargetUtility.IsValidEnemy(target)) return false;
+        if (!LockOnTargetUtility.IsValidEnemy(target, _ownerStats)) return false;
 
         // sqrMagnitude で sqrt を避けて距離チェック（最適化）
         if ((target.position - transform.position).sqrMagnitude > _lockOnRange * _lockOnRange) return false;
