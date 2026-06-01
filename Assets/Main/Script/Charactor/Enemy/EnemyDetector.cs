@@ -15,6 +15,7 @@ using UnityEngine;
 ///   Obstacle Layer  : 視線を遮る障害物のレイヤー（壁など）
 ///   Use Line Of Sight: 有効にすると壁越しに検知しない
 /// </summary>
+[RequireComponent(typeof(CharacterStats))]
 public class EnemyDetector : MonoBehaviour
 {
     [Header("検知範囲")]
@@ -37,7 +38,7 @@ public class EnemyDetector : MonoBehaviour
     [Tooltip("デバッグ用の Gizmo を表示する")]
     [SerializeField] private bool _drawGizmos = true;
 
-    [SerializeField] private CharacterStats _characterStats;
+    private CharacterStats _characterStats => gameObject.GetComponent<CharacterStats>();
 
     // ---- プロパティ ----
 
@@ -85,7 +86,9 @@ public class EnemyDetector : MonoBehaviour
         for (int i = 0; i < count; i++)
         {
             Collider col = _overlapResults[i];
-            if (_characterStats.GetEnemyFaction() == col.GetComponent<CharacterStats>().GetFaction()) {
+            if (!CharacterFactionRules.IsHostile(_characterStats, col.GetComponent<CharacterStats>()))
+            {
+                continue;
             }
 
             // プレイヤーのルート Transform を取得

@@ -42,6 +42,9 @@ public class LockOnController : MonoBehaviour
     [Header("Debug")]
     /// <summary>true のとき、エディタ上でロックオン範囲と照準線をギズモ表示する</summary>
     [SerializeField] private bool _drawGizmos = true;
+
+    [SerializeField]
+    private CharacterStats _playerstats;
     #endregion
     #region 変数フィールド
     /// <summary>現在ロックオン中のターゲット Transform（ロックオンしていなければ null）</summary>
@@ -65,13 +68,11 @@ public class LockOnController : MonoBehaviour
 
     /// <summary>ターゲットリストの更新タイマー</summary>
     private float _refreshTimer;
-    private CharacterStats _ownerStats;
     #endregion
     #endregion
 
     private void Awake()
     {
-        _ownerStats = GetComponentInParent<CharacterStats>();
 
         // SphereCollider をトリガーとして初期化し、半径をロックオン範囲に設定
         _rangeCollider = GetComponent<SphereCollider>();
@@ -211,7 +212,7 @@ public class LockOnController : MonoBehaviour
             Transform target = LockOnTargetUtility.GetTargetRoot(_overlapResults[i]);
 
             // 無効な敵や重複はスキップ
-            if (!LockOnTargetUtility.IsValidEnemy(target, _ownerStats)) continue;
+            if (!LockOnTargetUtility.IsValidEnemy(target,_playerstats)) continue;
             if (_targets.Contains(target)) continue;
 
             _targets.Add(target);
@@ -267,7 +268,8 @@ public class LockOnController : MonoBehaviour
     /// <returns>引き続きロックオン可能なら true</returns>
     private bool IsLockOnTargetValid(Transform target)
     {
-        if (!LockOnTargetUtility.IsValidEnemy(target, _ownerStats)) return false;
+
+        if (!LockOnTargetUtility.IsValidEnemy(target,_playerstats)) return false;
 
         // sqrMagnitude で sqrt を避けて距離チェック（最適化）
         if ((target.position - transform.position).sqrMagnitude > _lockOnRange * _lockOnRange) return false;

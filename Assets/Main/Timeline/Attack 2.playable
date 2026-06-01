@@ -290,9 +290,9 @@ MonoBehaviour:
   m_Name: AttackAssistAsset
   m_EditorClassIdentifier: Assembly-CSharp::AttackAssistAsset
   template:
-    moveDistance: 1
+    moveDistance: 10
     minApproachDistance: 1.2
-    useWarp: 0
+    useWarp: 1
     wallLayer:
       serializedVersion: 2
       m_Bits: 0

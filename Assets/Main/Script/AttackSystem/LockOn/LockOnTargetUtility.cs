@@ -12,17 +12,22 @@ public static class LockOnTargetUtility
         return collider.transform.root;
     }
 
-    public static bool IsValidEnemy(Transform target)
-    {
-        return IsValidEnemy(target, null);
-    }
+    //public static bool IsValidEnemy(Transform target)
+    //{
+    //    return IsValidEnemy(target, null);
+    //}
 
-    public static bool IsValidEnemy(Transform target, CharacterStats seeker)
+    public static bool IsValidEnemy(Transform target , CharacterStats seeker = null)
     {
         if (target == null || !target.gameObject.activeInHierarchy) return false;
 
         CharacterStats stats = target.GetComponentInChildren<CharacterStats>();
         if (stats == null || stats.IsDead) return false;
+
+        if(seeker != null)
+        {
+            if (!CharacterFactionRules.IsHostile(seeker, stats)) return false;
+        }
 
         return seeker == null || CharacterFactionRules.IsHostile(seeker, stats);
     }
