@@ -32,4 +32,7 @@ public struct DamageInfo
 
     /// <summary>ダウン中など、防御側の本来の耐性を無視して弱点扱いにする。</summary>
     public bool ForceWeakAttribute;
+
+    /// <summary>攻撃したキャラ</summary>
+    public CharacterStats AttackChara;
 }

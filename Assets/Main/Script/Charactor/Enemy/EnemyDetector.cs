@@ -43,10 +43,12 @@ public class EnemyDetector : MonoBehaviour
     // ---- プロパティ ----
 
     /// <summary>現在検知しているプレイヤーの Transform（未検知なら null）。</summary>
-    public Transform DetectedPlayer { get; private set; }
+    public Transform DetectedCharactor { get; private set; }
+
+    public Transform AttackCharactor { get; private set; }
 
     /// <summary>プレイヤーを検知しているか</summary>
-    public bool IsPlayerDetected => DetectedPlayer != null;
+    public bool IsPlayerDetected => DetectedCharactor != null;
 
     public void ApplyNpcType(NpcTypeData type)
     {
@@ -101,12 +103,23 @@ public class EnemyDetector : MonoBehaviour
             // 視線チェック（障害物越し不可のオプション）
             if (_useLineOfSight && !HasLineOfSight(target.position)) continue;
 
-            DetectedPlayer = target;
+            DetectedCharactor = target;
             return;
         }
 
         // 範囲内に見つからなかった → 未検知
-        DetectedPlayer = null;
+        if(DetectedCharactor == null)
+        {
+            DetectedCharactor = null;
+        }
+        if(_characterStats.lastAttackChara != null)
+        {
+            AttackCharactor = _characterStats.lastAttackChara.transform;
+        }
+        if(AttackCharactor != null)
+        {
+            DetectedCharactor = AttackCharactor;
+        }
     }
 
     /// <summary>対象が前方の扇状視野に入っているか</summary>
@@ -163,7 +176,7 @@ public class EnemyDetector : MonoBehaviour
         if (IsPlayerDetected)
         {
             Gizmos.color = Color.red;
-            Gizmos.DrawLine(transform.position, DetectedPlayer.position);
+            Gizmos.DrawLine(transform.position, DetectedCharactor.position);
         }
     }
 #endif

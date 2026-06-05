@@ -38,13 +38,14 @@ public class EnemyGenerator : MonoBehaviour
         NpcTypeData type = GetNpcType();
         GameObject prefab = type != null && type.Prefab != null ? type.Prefab : EnemyPrefab;
 
-        if (prefab == null || !prefab.CompareTag("Enemy"))
+        if (prefab == null)
         {
             Debug.LogWarning("EnemyGeneratorにEnemyタグ付きPrefabが設定されていません！！");
             return;
         }
 
-        Enemy = Instantiate(prefab, transform.position, Quaternion.identity);
+        Quaternion rotation = transform.rotation;
+        Enemy = Instantiate(prefab, transform.position, rotation);
 
         if (type == null) return;
 
@@ -57,14 +58,14 @@ public class EnemyGenerator : MonoBehaviour
 
     private bool HasSpawnSource()
     {
-        if (EnemyPrefab != null && EnemyPrefab.CompareTag("Enemy")) return true;
+        if (EnemyPrefab != null && EnemyPrefab.CompareTag("Charactor")) return true;
         if (NpcTypes == null) return false;
 
         for (int i = 0; i < NpcTypes.Length; i++)
         {
             if (NpcTypes[i] == null) continue;
-            if (NpcTypes[i].Prefab == null && EnemyPrefab != null && EnemyPrefab.CompareTag("Enemy")) return true;
-            if (NpcTypes[i].Prefab != null && NpcTypes[i].Prefab.CompareTag("Enemy"))
+            if (NpcTypes[i].Prefab == null && EnemyPrefab != null && EnemyPrefab.CompareTag("Charactor")) return true;
+            if (NpcTypes[i].Prefab != null && NpcTypes[i].Prefab.CompareTag("Charactor"))
                 return true;
         }
 
@@ -113,7 +114,7 @@ public class EnemyGenerator : MonoBehaviour
     private bool IsValidNpcType(NpcTypeData type)
     {
         if (type == null) return false;
-        if (type.Prefab != null) return type.Prefab.CompareTag("Enemy");
-        return EnemyPrefab != null && EnemyPrefab.CompareTag("Enemy");
+        if (type.Prefab != null) return type.Prefab.CompareTag("Charactor");
+        return EnemyPrefab != null && EnemyPrefab.CompareTag("Charactor");
     }
 }

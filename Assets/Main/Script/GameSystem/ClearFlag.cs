@@ -6,20 +6,31 @@ public class ClearFlag : MonoBehaviour
 {
     private CharacterStats PlayerStatus;
     private List<CharacterStats> EnemyStatus = new List<CharacterStats>();
-    [SerializeField] KillCamera camera;
+    private List<CharacterStats> OtherStatus = new List<CharacterStats>();
+    [SerializeField] KillCamera killCamera;
 
     private bool GameOverFlag = false;
     private bool IsClear;
 
     private void Start()
     {
-        PlayerStatus = 
-            GameObject.FindGameObjectWithTag("Player").GetComponent<CharacterStats>();
-        GameObject[] EnemyObj = GameObject.FindGameObjectsWithTag("Enemy");
-        foreach (GameObject obj in EnemyObj)
+
+        GameObject[] CharaObj = GameObject.FindGameObjectsWithTag("Charactor");
+        foreach (GameObject obj in CharaObj)
         {
             if (obj.GetComponent<CharacterStats>() != null) {
-                EnemyStatus.Add(obj.GetComponent<CharacterStats>());
+                switch (obj.GetComponent<CharacterStats>().Faction)
+                {
+                    case CharacterFaction.Player:
+                        PlayerStatus = obj.GetComponent<CharacterStats>();
+                        break;
+                    case CharacterFaction.Enemy:
+                        EnemyStatus.Add(obj.GetComponent<CharacterStats>());
+                        break;
+                    default:
+                        OtherStatus.Add(obj.GetComponent<CharacterStats>());
+                        break;
+                }
             }
         }
         Debug.Log(EnemyStatus.Count);
@@ -45,7 +56,7 @@ public class ClearFlag : MonoBehaviour
             if (EnemyStatus[0].CurrentHP <= 0)
             {
                 Debug.Log("ÅŒã‚Ìˆêl‚ªŽ€‚ñ‚¾II");
-                camera.ActivateKillCam(EnemyStatus[0].transform);
+                killCamera.ActivateKillCam(EnemyStatus[0].transform);
                 GameOverFlag = true;
             }
         }

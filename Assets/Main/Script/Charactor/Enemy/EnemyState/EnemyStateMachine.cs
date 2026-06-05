@@ -27,7 +27,7 @@ public class EnemyStateMachine : CharacterStateMachineBase
 
     public float AttackRange => _attackRange;
     public float AttackInterval => _attackInterval;
-    public Transform PlayerTransform => Detector.DetectedPlayer;
+    public Transform PlayerTransform => Detector.DetectedCharactor;
 
     public void ApplyNpcType(NpcTypeData type)
     {

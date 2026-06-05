@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+#region
 /// <summary>
 /// 被弾時のキャラクターの反応状態を表す列挙型。
 /// ダメージ受付・ノックバック可否の判定に使用する。
@@ -28,7 +29,7 @@ public enum HitReactionState
     /// </summary>
     Invincible
 }
-
+#endregion
 /// <summary>
 /// キャラクターの実行時ステータスを管理する MonoBehaviour。
 /// プレイヤー・敵ともにこのコンポーネントをアタッチして使用する。
@@ -48,10 +49,8 @@ public enum HitReactionState
 /// </summary>
 public class CharacterStats : MonoBehaviour
 {
-    // -------------------------------------------------------
-    // Inspector フィールド
-    // -------------------------------------------------------
-
+    #region 変数
+    #region Inspector フィールド
     [Header("ステータスデータ")]
     /// <summary>キャラクターの基本ステータスを定義する ScriptableObject。</summary>
     [SerializeField] private CharacterStatData _statData;
@@ -81,11 +80,8 @@ public class CharacterStats : MonoBehaviour
 
     /// <summary>無敵状態の点滅速度（大きいほど速く点滅する）。</summary>
     [SerializeField] private float _invincibleBlinkSpeed = 12f;
-
-    // -------------------------------------------------------
-    // プライベートフィールド
-    // -------------------------------------------------------
-
+    #endregion
+    #region private フィールド
     /// <summary>現在有効なダメージバフのリスト。</summary>
     private readonly List<DamageBuff> _damageBuffs = new List<DamageBuff>();
 
@@ -113,10 +109,9 @@ public class CharacterStats : MonoBehaviour
     // URP (_BaseColor) と Built-in (_Color) の両シェーダーに対応するためのプロパティ ID キャッシュ
     private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
     private static readonly int ColorId     = Shader.PropertyToID("_Color");
-
-    // -------------------------------------------------------
-    // プロパティ
-    // -------------------------------------------------------
+    #endregion
+    #region 参照データ
+    public CharacterStats lastAttackChara;
 
     /// <summary>キャラクターの基本ステータスデータ。</summary>
     public CharacterStatData StatData => _statData;
@@ -215,10 +210,6 @@ public class CharacterStats : MonoBehaviour
     /// </summary>
     public float IncomingDamageMultiplier => GetDamageMultiplier(DamageBuffTarget.IncomingDamage);
 
-    // -------------------------------------------------------
-    // イベント
-    // -------------------------------------------------------
-
     /// <summary>
     /// ダメージを受けた直後に発火する。
     /// 引数: (実ダメージ量, クリティカルヒットか, 攻撃の属性タイプ)
@@ -230,10 +221,8 @@ public class CharacterStats : MonoBehaviour
 
     /// <summary>ダメージバフが追加・削除・期限切れになった際に発火する。UI 更新などに利用する。</summary>
     public event Action OnDamageBuffsChanged;
-
-    // -------------------------------------------------------
-    // Unity ライフサイクル
-    // -------------------------------------------------------
+    #endregion
+    #endregion
 
     private void Awake()
     {
@@ -262,14 +251,11 @@ public class CharacterStats : MonoBehaviour
         UpdateHitReactionVisual();
     }
 
-    // -------------------------------------------------------
-    // 公開 API
-    // -------------------------------------------------------
-
+    #region 陣営自動設定関連
     /// <summary>
     /// Inspector での値変更時に呼ばれる Unity コールバック。
     /// デフォルト関係を使用している場合、Inspector 上の陣営フィールドを
-    /// ルール通りの値に自動更新してプレビュー表示に反映する。
+    /// 設定の値に自動更新してプレビュー表示に反映する。
     /// </summary>
     private void OnValidate()
     {
@@ -278,7 +264,8 @@ public class CharacterStats : MonoBehaviour
         _hostileFactions   = CharacterFactionRules.DefaultHostileFactions(_faction);
         _attackableFactions = CharacterFactionRules.DefaultAttackableFactions(_faction);
     }
-
+    #endregion
+    #region ダメージを受ける処理
     /// <summary>
     /// ダメージを受ける処理。<c>DamageHitEffect</c> などの攻撃判定スクリプトから呼び出す。
     /// 以下の順で処理を行う。
@@ -293,6 +280,8 @@ public class CharacterStats : MonoBehaviour
     /// <param name="info">攻撃側が設定するダメージ情報</param>
     public void TakeDamage(DamageInfo info)
     {
+        lastAttackChara = info.AttackChara;
+
         if (IsDead)        return; // 既に死亡済みなら処理しない
         if (_statData == null) return; // StatData 未設定なら処理しない
         if (!CanReceiveHit) return; // 無敵状態なら処理しない
@@ -318,7 +307,8 @@ public class CharacterStats : MonoBehaviour
         if (CurrentHP <= 0)
             OnDeath?.Invoke();
     }
-
+    #endregion
+    #region
     /// <summary>
     /// 被弾反応状態を恒久的に変更する。一時的な状態タイマーはリセットされる。
     /// Inspector デバッグや特定のゲームイベントで状態を固定する際に使用する。
@@ -330,7 +320,8 @@ public class CharacterStats : MonoBehaviour
         _timedStateTimer = 0f;
         _hitReactionState = state;
     }
-
+    #endregion
+    #region
     /// <summary>
     /// 一時的な被弾反応状態を設定する。<paramref name="duration"/> 秒後に元の状態へ自動復帰する。
     /// 回避無敵・怯み・ダウンなどの時限的な状態変化に使用する。
@@ -352,7 +343,8 @@ public class CharacterStats : MonoBehaviour
         _timedStateTimer       = duration;
         _hasTimedState         = true;
     }
-
+    #endregion
+    #region
     /// <summary>
     /// 実効的な属性耐性レベルを返す。
     /// ダウン状態の場合はすべての属性に対して <see cref="ResistanceLevel.Weak"/> を返す。
@@ -365,7 +357,8 @@ public class CharacterStats : MonoBehaviour
         if (IsDown) return ResistanceLevel.Weak;
         return _statData != null ? _statData.GetAttributeResistanceLevel(attribute) : ResistanceLevel.Normal;
     }
-
+    #endregion
+    #region
     /// <summary>
     /// ダメージバフを追加する。同一 ID のバフが既に存在する場合はリフレッシュする。
     /// </summary>
@@ -399,7 +392,8 @@ public class CharacterStats : MonoBehaviour
         OnDamageBuffsChanged?.Invoke();
         return buff;
     }
-
+    #endregion
+    #region
     /// <summary>
     /// 指定 ID のダメージバフを削除する。
     /// </summary>
@@ -421,7 +415,8 @@ public class CharacterStats : MonoBehaviour
 
         return false;
     }
-
+    #endregion
+    #region
     /// <summary>
     /// 有効なダメージバフをすべて削除する。
     /// </summary>
@@ -432,11 +427,11 @@ public class CharacterStats : MonoBehaviour
         _damageBuffs.Clear();
         OnDamageBuffsChanged?.Invoke();
     }
-
+    #endregion
     // -------------------------------------------------------
     // プライベートメソッド
     // -------------------------------------------------------
-
+    #region
     /// <summary>
     /// ダメージバフのタイマーを更新し、期限切れのバフを削除する。
     /// </summary>
@@ -458,7 +453,8 @@ public class CharacterStats : MonoBehaviour
         if (changed)
             OnDamageBuffsChanged?.Invoke();
     }
-
+    #endregion
+    #region
     /// <summary>
     /// 指定した対象（送ダメージ or 受ダメージ）に有効なバフの倍率をすべて掛け合わせて返す。
     /// バフがない場合は 1.0 を返す。
@@ -478,7 +474,8 @@ public class CharacterStats : MonoBehaviour
 
         return multiplier;
     }
-
+    #endregion
+    #region
     /// <summary>
     /// 指定 ID のバフを線形探索で返す。見つからない場合は null。
     /// </summary>
@@ -496,7 +493,8 @@ public class CharacterStats : MonoBehaviour
 
         return null;
     }
-
+    #endregion
+    #region
     /// <summary>
     /// 一時的な被弾状態のタイマーを更新する。
     /// タイマーが 0 以下になると <see cref="_stateBeforeTimedState"/> に復帰する。
@@ -514,7 +512,8 @@ public class CharacterStats : MonoBehaviour
         _timedStateTimer  = 0f;
         _hasTimedState    = false;
     }
-
+    #endregion
+    #region
     /// <summary>
     /// 子オブジェクトを含む Renderer を取得し、マテリアルのベースカラーをキャッシュする。
     /// Awake 時に一度だけ呼び出す。
@@ -542,7 +541,8 @@ public class CharacterStats : MonoBehaviour
 
         _lastAppliedHitReactionState = _hitReactionState;
     }
-
+    #endregion
+    #region
     /// <summary>
     /// 被弾状態に応じたマテリアルカラーを更新する。
     /// 無敵状態の場合はシアン色で点滅し、それ以外は元のベースカラーに戻す。
@@ -579,4 +579,5 @@ public class CharacterStats : MonoBehaviour
 
         _lastAppliedHitReactionState = _hitReactionState;
     }
+    #endregion
 }

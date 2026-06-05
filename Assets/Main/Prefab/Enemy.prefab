@@ -394,6 +394,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterStats
   _statData: {fileID: 11400000, guid: cc22cf31af96b904a8c51b7ef80fa932, type: 2}
+  _faction: 1
+  _useDefaultFactionRelations: 1
+  _hostileFactions: 5
+  _attackableFactions: 5
+  _hitReactionState: 0
+  _invincibleBlinkColor: {r: 0, g: 1, b: 1, a: 1}
+  _invincibleBlinkSpeed: 12
+  lastAttackChara: {fileID: 0}
 --- !u!114 &7381111294966750725
 MonoBehaviour:
   m_ObjectHideFlags: 0

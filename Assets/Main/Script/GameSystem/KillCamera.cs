@@ -4,7 +4,7 @@ using System.Collections;
 public class KillCamera : MonoBehaviour
 {
     [Header("カメラ設定")]
-    [SerializeField] Camera camera;
+    [SerializeField] Camera sabCamera;
     [SerializeField] ThirdPersonCamera TPC;
     [SerializeField] Transform player; // プレイヤー
     public float transitionDuration = 0.5f; // カメラが移動する時間
@@ -35,7 +35,6 @@ public class KillCamera : MonoBehaviour
         float startWaitTime = Time.realtimeSinceStartup;
         while (Time.realtimeSinceStartup - startWaitTime < 5f)
         {
-            Debug.Log(Time.realtimeSinceStartup - startWaitTime);
             yield return null;
         }
         TPC.enabled = true;

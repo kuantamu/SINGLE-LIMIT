@@ -4,7 +4,7 @@ using UnityEngine;
 /// ダメージ計算式をまとめた静的クラス。
 ///
 /// ■ 計算式
-///   最終ダメージ = 攻撃力 × 属性倍率 × クリティカル倍率 × 防御倍率
+///   合計ダメージ　＝　基礎攻撃×耐性×(スキル＋与ダメ＋被ダメ)×クリティカル×ガード
 ///
 /// ■ 属性倍率
 ///   弱点 → 1.5 / 通常 → 1.0 / 耐性 → 0.5 / 免疫 → 0.0
@@ -38,13 +38,13 @@ public static class DamageCalculator
         // クリティカル抽選
         isCritical = Random.value < info.CriticalRate;
 
-        float skillMultiplier = info.SkillPower;
-        float outgoingMultiplier = info.UseOutgoingDamageMultiplier
+        float skillMultiplier = 1.0f - info.SkillPower;
+        float outgoingMultiplier = 1.0f - (info.UseOutgoingDamageMultiplier
             ? Mathf.Max(0f, info.OutgoingDamageMultiplier)
-            : 1f;
-        float incomingMultiplier = info.UseIncomingDamageMultiplier
+            : 1f);
+        float incomingMultiplier = 1.0f - (info.UseIncomingDamageMultiplier
             ? Mathf.Max(0f, info.IncomingDamageMultiplier)
-            : 1f;
+            : 1f);
 
         // ダウン中は全属性を弱点として扱う。
         float attrMultiplier = info.ForceWeakAttribute
@@ -57,13 +57,12 @@ public static class DamageCalculator
         // 防御倍率
         float guardMultiplier = info.IsGuarded ? GuardDamageRate : 1.0f;
 
-        float raw = info.AttackPower
+        // 合計ダメージ　＝　基礎攻撃×耐性×(スキル＋与ダメ＋被ダメ)×クリティカル×ガード
+        float raw = info.AttackPower 
             * attrMultiplier
             * critMultiplier
-            * guardMultiplier
-            * skillMultiplier
-            * outgoingMultiplier
-            * incomingMultiplier;
+            * (1.0f + skillMultiplier + outgoingMultiplier + incomingMultiplier)
+            * guardMultiplier;
 
         return Mathf.Max(0, Mathf.RoundToInt(raw));
     }
