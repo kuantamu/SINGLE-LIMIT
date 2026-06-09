@@ -1,10 +1,5 @@
 using UnityEngine;
 
-/// <summary>
-/// ヒット時にダメージ数字ポップアップを生成する IHitEffect 実装。
-/// 設定は Inspector から変更可能だが、すべてデフォルト値があるため
-/// 何も設定しなくても動作する。
-/// </summary>
 [System.Serializable]
 public class DamageNumberEffect : IHitEffect
 {
@@ -31,17 +26,13 @@ public class DamageNumberEffect : IHitEffect
         var stats = hitCollider.GetComponentInParent<CharacterStats>();
         if (stats == null) return;
 
-        // OnDamaged に一度だけ購読して、発火したら即座に解除する
-        // これにより多段ヒット中に複数のハンドラが蓄積するのを防ぐ
         System.Action<int, bool, AttributeType> handler = null;
         handler = (damage, isCritical, damageType) =>
         {
             stats.OnDamaged -= handler; // 即座に購読解除
             
-            // hitCollider が Destroy されていないかチェック
             if (hitCollider == null) return;
             
-            // ダウン中はダメージ計算と表示の両方で弱点扱いにする。
             ResistanceLevel resistanceLevel = stats.GetEffectiveAttributeResistanceLevel(damageType);
             SpawnPopup(hitCollider, damage, isCritical, stats.IsGuarding, damageType,
                 resistanceLevel);
@@ -56,7 +47,6 @@ public class DamageNumberEffect : IHitEffect
         var prefab = DamageNumberPopup.GetPrefab();
         if (prefab == null) return;
 
-        // hitCollider が Destroy されていないかチェック（念の為）
         if (hitCollider == null) return;
 
         Vector3 spawnPos = hitCollider.bounds.center

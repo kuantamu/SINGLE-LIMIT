@@ -357,7 +357,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyGenerator
   EnemyPrefab: {fileID: 7940209007401969422, guid: 086e5594f0a4b6047b3bcce088cf311f, type: 3}
+  NpcTypes: []
   SpownSecond: 2
+  RandomizeNpcType: 1
 --- !u!4 &390874336 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7961527485748204923, guid: a43438522917cf644ab78c676f9dac8f, type: 3}

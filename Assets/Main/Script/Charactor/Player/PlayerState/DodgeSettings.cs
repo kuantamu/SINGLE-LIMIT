@@ -1,8 +1,5 @@
 using UnityEngine;
 
-/// <summary>
-/// 回避の各種設定値。PlayerStateMachine にアタッチして Inspector から調整する。
-/// </summary>
 [System.Serializable]
 public class DodgeSettings
 {

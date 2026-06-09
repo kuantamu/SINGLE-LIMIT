@@ -1,8 +1,5 @@
 using UnityEngine;
 
-
-
-#region 待機 / 移動ステート。
 public class IdleState : PlayerState
 {
     public IdleState(PlayerStateMachine sm) : base(sm) {}
@@ -44,12 +41,9 @@ public class IdleState : PlayerState
             SM.AnimController.PlayIdle();
     }
 }
-#endregion
 
-#region 防御ステート
 public class GuardState : PlayerState
 {
-    // CharacterStats をキャッシュして毎フレームの GetComponent を避ける
     private CharacterStats _stats;
 
     public GuardState(PlayerStateMachine sm) : base(sm) {}
@@ -59,16 +53,15 @@ public class GuardState : PlayerState
         SM.Movement.StopHorizontal();
         SM.AnimController.PlayGuard();
 
-        // Enter 時に一度だけ取得してキャッシュ
-        _stats = SM.GetComponent<CharacterStats>();
-        if (_stats != null) _stats.IsGuarding = true;
+        _stats = SM.CharStats;
+        if (_stats != null)
+            _stats.IsGuarding = true;
     }
 
     public override void Exit()
     {
-        // ガード状態の解除は Exit で一元管理する
-        // これにより攻撃・回避などどのキャンセルルートでも確実に解除される
-        if (_stats != null) _stats.IsGuarding = false;
+        if (_stats != null)
+            _stats.IsGuarding = false;
     }
 
     public override void Update()
@@ -92,7 +85,6 @@ public class GuardState : PlayerState
             return;
         }
         
-        // カメラ前方を向く
         SM.Movement.FaceCamera();
         SM.Movement.GuardMove(SM.InputHandler.MoveInput);
         if (SM.InputHandler.IsDodgePush)
@@ -100,24 +92,19 @@ public class GuardState : PlayerState
             SM.InputHandler.CancelBuffer();
             SM.TransitionTo(SM.Dodge);
             if (!SM.InputHandler.IsMoving)
-            { 
-                SM.Dodge.RequestSpotDodge(); 
-            }
-            
+                SM.Dodge.RequestSpotDodge();
+
             return;
         }
     }
 }
-#endregion
 
-#region 特殊ステート
 public class SpecialState : PlayerState
 {
     public SpecialState(PlayerStateMachine sm) : base(sm){}
 
     public override void Enter()
     {
-        // 入力・移動を完全に止める
         SM.Movement.StopHorizontal();
         SM.InputHandler.CancelBuffer();
 
@@ -137,9 +124,7 @@ public class SpecialState : PlayerState
         SM.TransitionTo(SM.Idle);
     }
 }
-#endregion
 
-#region 回避ステート
 public class DodgeState : PlayerState
 {
     private enum Phase { PreLag, Active, PostLag }
@@ -202,7 +187,6 @@ public class DodgeState : PlayerState
                 break;
             case Phase.Active:
                 _phaseTimer = _activeDuration;
-                // 回避の実移動中だけ無敵にする。連続回避段階が高いほど無敵時間は短くなる。
                 SM.CharStats?.SetTimedHitReactionState(
                     HitReactionState.Invincible,
                     SM.GetDodgeInvincibleDuration(_penaltyLevel));
@@ -214,13 +198,10 @@ public class DodgeState : PlayerState
         }
     }
 }
-#endregion
 
-#region 攻撃ステート
 public class AttackState : PlayerState
 {
     private int  _comboIndex;
-    private bool _bufferOpen;    // バッファ積み込みが許可されているか
     private bool _cancellable;   // キャンセル行動が許可されているか
 
     public AttackState(PlayerStateMachine sm) : base(sm) {}
@@ -229,7 +210,6 @@ public class AttackState : PlayerState
 
     public override void Enter()
     {
-        _bufferOpen  = false;
         _cancellable = false;
 
         SM.Movement.StopHorizontal();
@@ -250,10 +230,8 @@ public class AttackState : PlayerState
 
     public override void Update()
     {
-        // キャンセル可能フレーム前は入力を無視
         if (!_cancellable) return;
 
-        // コンボ継続（バッファ消費 or 直押し）
         if (SM.InputHandler.AttackPressed || SM.InputHandler.ConsumeBufferedAttack())
         {
             _comboIndex = (_comboIndex + 1) % SM.AnimController.AttackCount;
@@ -273,14 +251,12 @@ public class AttackState : PlayerState
             return;
         }
 
-        // 移動キャンセル → Idle
         if (SM.InputHandler.IsMoving)
         {
             SM.TransitionTo(SM.Idle);
             return;
         }
 
-        // 防御キャンセル → Guard
         if (SM.InputHandler.IsGuardHeld)
         {
             SM.TransitionTo(SM.Guard);
@@ -288,12 +264,9 @@ public class AttackState : PlayerState
         }
     }
 
-    // ---- Signal ハンドラ ----
-
     private void HandleBufferOpen()
     {
-        _bufferOpen = true;
-        SM.InputHandler.OpenBuffer(); // ここからバッファへの積み込みを許可
+        SM.InputHandler.OpenBuffer();
     }
 
     private void HandleCancellableFrame() => _cancellable = true;
@@ -303,14 +276,7 @@ public class AttackState : PlayerState
         SM.TransitionTo(SM.Idle);
     }
 }
-#endregion
 
-#region 強攻撃ステート
-/// <summary>
-/// 強攻撃ステート（左クリック長押しで発動）。
-/// 通常攻撃と同じ構造だが PlayHeavyAttack() を呼ぶ。
-/// コンボからの強攻撃への派生も受け付ける。
-/// </summary>
 public class HeavyAttackState : PlayerState
 {
     private bool _cancellable;
@@ -361,16 +327,13 @@ public class HeavyAttackState : PlayerState
     private void HandleCancellableFrame() => _cancellable = true;
     private void HandleMotionEnd() => SM.TransitionTo(SM.Idle);
 }
-#endregion
 
-#region プレイヤー死亡ステート
 public class PlayerDeathState : PlayerState
 {
     public PlayerDeathState(PlayerStateMachine sm) : base(sm) {}
 
     public override void Enter()
     {
-        // 入力・移動を完全に止める
         SM.Movement.StopHorizontal();
         SM.InputHandler.CancelBuffer();
 
@@ -390,19 +353,7 @@ public class PlayerDeathState : PlayerState
         SM.gameObject.SetActive(false);
     }
 }
-#endregion
 
-#region ノックバック（怯み）ステート
-// ============================================================
-// EnemyKnockbackState
-// ============================================================
-
-/// <summary>
-/// ノックバックステート。
-/// Stagger モーションを流用しつつ、EnemyMovement.StartKnockback() で移動させる。
-/// モーション終了またはノックバック移動完了後に Chase に戻る。
-/// KnockbackHitEffect → EnemyStateMachine.TriggerKnockback() 経由で遷移する。
-/// </summary>
 public class PlayerKnockbackState : PlayerState
 {
     private Vector3 _dir;
@@ -411,7 +362,6 @@ public class PlayerKnockbackState : PlayerState
 
     public PlayerKnockbackState(PlayerStateMachine sm) : base(sm) { }
 
-    /// <summary>遷移前にノックバックのパラメータをセットする。</summary>
     public void SetKnockback(Vector3 dir, float distance, float duration)
     {
         _dir = dir;
@@ -436,5 +386,3 @@ public class PlayerKnockbackState : PlayerState
 
     private void HandleMotionEnd() => SM.TransitionTo(SM.Idle);
 }
-
-#endregion

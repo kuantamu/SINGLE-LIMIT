@@ -3,9 +3,6 @@ using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
 
-/// <summary>
-/// HitBoxTrack に配置するクリップ。
-/// </summary>
 [System.Serializable]
 public class HitBoxClip : PlayableAsset, ITimelineClipAsset
 {
@@ -50,8 +47,6 @@ public class HitBoxClip : PlayableAsset, ITimelineClipAsset
         behaviour.HitInterval = HitInterval;
         behaviour.HitLayer = HitLayer;
 
-        #region HIT設定
-        //HitEffectに関するデータのやり取り
         var effects = new List<IHitEffect>
         {
             DamageNumber,
@@ -63,10 +58,8 @@ public class HitBoxClip : PlayableAsset, ITimelineClipAsset
             new KnockbackHitEffect { Settings = Knockback },
             
         };
-        //HITした場合の行動
         if (HitPointEffect != null)
             effects.Add(new HitPointEffect { Data = HitPointEffect });
-        #endregion
         behaviour.HitEffects = effects;
 
         return playable;

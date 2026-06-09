@@ -1,4 +1,4 @@
-﻿public abstract class EnemyState : ICharacterState
+public abstract class EnemyState : ICharacterState
 {
     protected readonly EnemyStateMachine SM;
 

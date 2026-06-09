@@ -1,8 +1,5 @@
 using UnityEngine;
 
-/// <summary>
-/// ノックバックの設定。HitBoxClip に持たせて Inspector から調整する。
-/// </summary>
 [System.Serializable]
 public class KnockbackSettings
 {

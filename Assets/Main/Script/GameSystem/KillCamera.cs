@@ -3,26 +3,23 @@ using System.Collections;
 
 public class KillCamera : MonoBehaviour
 {
-    [Header("ƒJƒƒ‰İ’è")]
+    [Header("ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½İ’ï¿½")]
     [SerializeField] Camera sabCamera;
     [SerializeField] ThirdPersonCamera TPC;
-    [SerializeField] Transform player; // ƒvƒŒƒCƒ„[
-    public float transitionDuration = 0.5f; // ƒJƒƒ‰‚ªˆÚ“®‚·‚éŠÔ
-    public float zoomDistance = 5.0f; // “G‚©‚ç‚Ì‹——£
-    public float slowMotionTimeScale = 0.2f; // ƒXƒ[ƒ‚[ƒVƒ‡ƒ“‚Ì‘¬“x
+    [SerializeField] Transform player; // ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[
+    public float transitionDuration = 0.5f; // ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú“ï¿½ï¿½ï¿½ï¿½éï¿½ï¿½
+    public float zoomDistance = 5.0f; // ï¿½Gï¿½ï¿½ï¿½ï¿½Ì‹ï¿½ï¿½ï¿½
+    public float slowMotionTimeScale = 0.2f; // ï¿½Xï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½Ì‘ï¿½ï¿½x
 
     private bool isTriggered = false;
 
     [SerializeField] GameOverWin GameOverWin;
-    // “G‚ğŒ‚”j‚µ‚½‚ÉŒÄ‚Ôƒƒ\ƒbƒh
     public void ActivateKillCam(Transform targetEnemy)
     {
         if (isTriggered) return;
         isTriggered = true;
         TPC.enabled = false;
-        // ƒXƒ[ƒ‚[ƒVƒ‡ƒ“ŠJn
         StartCoroutine(SlowMotionRoutine());
-        // ƒJƒƒ‰‚ÌˆÚ“®ŠJn
         StartCoroutine(MoveCameraRoutine(targetEnemy));
     }
 
@@ -31,18 +28,15 @@ public class KillCamera : MonoBehaviour
         Time.timeScale = slowMotionTimeScale;
         Time.fixedDeltaTime = 0.02f * Time.timeScale;
 
-        // ˆê’èŠÔƒXƒ[‚ğˆÛ (Œ»ÀŠÔ‚Å‘Ò‚Â‚½‚ß realtimeSinceStartup ‚ğg—p)
         float startWaitTime = Time.realtimeSinceStartup;
         while (Time.realtimeSinceStartup - startWaitTime < 5f)
         {
             yield return null;
         }
         TPC.enabled = true;
-        // ŠÔ‚ğŒ³‚É–ß‚·
         Time.timeScale = 1.0f;
         Time.fixedDeltaTime = 0.02f;
 
-        //ƒQ[ƒ€I—¹‚·‚é
         GameOverWin.StartWin();
     }
 
@@ -55,10 +49,9 @@ public class KillCamera : MonoBehaviour
 
         while (elapsedTime < transitionDuration)
         {
-            elapsedTime += Time.unscaledDeltaTime; // ƒXƒ[‚Ì‰e‹¿‚ğó‚¯‚¸‚ÉŠÔ‚ği‚ß‚é
+            elapsedTime += Time.unscaledDeltaTime; // ï¿½Xï¿½ï¿½ï¿½[ï¿½Ì‰eï¿½ï¿½ï¿½ï¿½ó‚¯‚ï¿½ï¿½Éï¿½ï¿½Ô‚ï¿½iï¿½ß‚ï¿½
             float t = Mathf.Clamp01(elapsedTime / transitionDuration);
 
-            // “G‚Ì­‚µŒã‚ëA‚©‚Â“G‚ÆƒvƒŒƒCƒ„[‚ÌŠÔ‚È‚Ç‚ÉƒJƒƒ‰‚ğ”z’u
             Vector3 targetCamPos = targetEnemy.position + (targetEnemy.position - player.position).normalized * zoomDistance + Vector3.up * 2f;
             Quaternion targetRotation = Quaternion.LookRotation(targetEnemy.position - transform.position);
 

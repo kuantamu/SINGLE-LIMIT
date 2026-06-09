@@ -1,11 +1,6 @@
 using UnityEngine;
 using UnityEngine.Playables;
 
-/// <summary>
-/// HitBoxTrack のミキサー。
-/// ProcessFrame でクリップのアクティブ状態を監視し
-/// Spawn / Despawn のタイミングを制御する。
-/// </summary>
 public class HitBoxMixerBehaviour : PlayableBehaviour
 {
     public override void ProcessFrame(Playable playable, FrameData info, object playerData)
@@ -19,7 +14,6 @@ public class HitBoxMixerBehaviour : PlayableBehaviour
         {
             Playable input = playable.GetInput(i);
 
-            // キャスト前に有効性と型を確認する
             if (!input.IsValid()) continue;
             if (input.GetPlayableType() != typeof(HitBoxBehaviour)) continue;
 
@@ -48,7 +42,6 @@ public class HitBoxMixerBehaviour : PlayableBehaviour
 
     private void DespawnAll(Playable playable)
     {
-        // playable 自体が無効な場合は何もしない
         if (!playable.IsValid()) return;
 
         int inputCount = playable.GetInputCount();

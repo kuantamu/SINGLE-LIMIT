@@ -1,20 +1,5 @@
 using UnityEngine;
 
-/// <summary>
-/// ダメージ計算式をまとめた静的クラス。
-///
-/// ■ 計算式
-///   合計ダメージ　＝　基礎攻撃×耐性×(スキル＋与ダメ＋被ダメ)×クリティカル×ガード
-///
-/// ■ 属性倍率
-///   弱点 → 1.5 / 通常 → 1.0 / 耐性 → 0.5 / 免疫 → 0.0
-///
-/// ■ クリティカル
-///   クリティカル率で抽選し、成功すればクリティカルダメージ倍率を乗算
-///
-/// ■ 防御アクション中
-///   最終ダメージ × 0.5（50%カット）
-/// </summary>
 public static class DamageCalculator
 {
     private const float GuardDamageRate = 0.5f;
@@ -24,40 +9,43 @@ public static class DamageCalculator
     private const float ResistMultiplier = 0.5f;
     private const float ImmuneMultiplier = 0.0f;
 
-    /// <summary>
-    /// 最終ダメージを計算して返す。
-    /// </summary>
-    /// <param name="info">攻撃情報</param>
-    /// <param name="defenderStats">防御側のステータス</param>
-    /// <param name="isCritical">クリティカルが発生したか（out）</param>
     public static int Calculate(
         DamageInfo       info,
         CharacterStatData defenderStats,
         out bool          isCritical)
     {
-        // クリティカル抽選
         isCritical = Random.value < info.CriticalRate;
 
         float skillMultiplier = 1.0f - info.SkillPower;
-        float outgoingMultiplier = 1.0f - (info.UseOutgoingDamageMultiplier
-            ? Mathf.Max(0f, info.OutgoingDamageMultiplier)
-            : 1f);
-        float incomingMultiplier = 1.0f - (info.UseIncomingDamageMultiplier
-            ? Mathf.Max(0f, info.IncomingDamageMultiplier)
-            : 1f);
-
-        // ダウン中は全属性を弱点として扱う。
-        float attrMultiplier = info.ForceWeakAttribute
-            ? WeakMultiplier
-            : GetAttributeMultiplier(info.Attribute, defenderStats);
-
-        // クリティカル倍率
-        float critMultiplier = isCritical ? info.CriticalMultiplier : 1.0f;
-
-        // 防御倍率
-        float guardMultiplier = info.IsGuarded ? GuardDamageRate : 1.0f;
-
-        // 合計ダメージ　＝　基礎攻撃×耐性×(スキル＋与ダメ＋被ダメ)×クリティカル×ガード
+        float outgoingMultiplier = 1.0f;
+        if (info.UseOutgoingDamageMultiplier)
+        {
+            outgoingMultiplier = Mathf.Max(0f, info.OutgoingDamageMultiplier) - outgoingMultiplier;
+        }
+        float incomingMultiplier = 1.0f;
+        if (info.UseIncomingDamageMultiplier)
+        {
+            incomingMultiplier = Mathf.Max(0f, info.IncomingDamageMultiplier) - incomingMultiplier;
+        }
+        float attrMultiplier;
+        if (info.ForceWeakAttribute)
+        {
+            attrMultiplier = WeakMultiplier;
+        }
+        else
+        {
+            attrMultiplier = GetAttributeMultiplier(info.Attribute, defenderStats);
+        }
+        float critMultiplier = 1.0f;
+        if (isCritical)
+        {
+            critMultiplier = info.CriticalMultiplier;
+        }
+        float guardMultiplier = 1.0f;
+        if (info.IsGuarded)
+        {
+            guardMultiplier = GuardDamageRate;
+        }
         float raw = info.AttackPower 
             * attrMultiplier
             * critMultiplier
@@ -67,7 +55,6 @@ public static class DamageCalculator
         return Mathf.Max(0, Mathf.RoundToInt(raw));
     }
 
-    /// <summary>属性と防御側の耐性から倍率を取得する</summary>
     private static float GetAttributeMultiplier(
         AttributeType     attribute,
         CharacterStatData defenderStats)

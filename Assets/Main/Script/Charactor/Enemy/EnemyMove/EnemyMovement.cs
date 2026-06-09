@@ -1,16 +1,13 @@
-﻿using UnityEngine;
+using UnityEngine;
 
-//CharacterMovementBaseを継承
 public class EnemyMovement : CharacterMovementBase
 {
-    #region 変数
     [Header("Move")]
     [SerializeField] private float _moveSpeed = 3f;
     [SerializeField] private float _acceleration = 15f;
 
     [Header("Rotation")]
     [SerializeField] private float _rotationSpeed = 360f;
-    #endregion
 
     public void ApplyNpcType(NpcTypeData type)
     {
@@ -21,7 +18,6 @@ public class EnemyMovement : CharacterMovementBase
         _rotationSpeed = type.RotationSpeed;
     }
 
-    //移動処理
     public void MoveToward(Vector3 targetPos)
     {
         Vector3 dir = targetPos - transform.position;
@@ -35,13 +31,11 @@ public class EnemyMovement : CharacterMovementBase
         RotateToward(targetPos);
     }
 
-    //向かう方向を向く処理
     public void FaceToward(Vector3 targetPos)
     {
         RotateToward(targetPos);
     }
 
-    //向かう方向に向く処理
     private void RotateToward(Vector3 targetPos)
     {
         Vector3 dir = targetPos - transform.position;

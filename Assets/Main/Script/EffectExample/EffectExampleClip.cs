@@ -2,10 +2,6 @@ using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
 
-/// <summary>
-/// Timeline clip for EffectExampleTrack.
-/// The prefab ParticleSystem duration is exposed to Timeline.
-/// </summary>
 [System.Serializable]
 public class EffectExampleClip : PlayableAsset, ITimelineClipAsset
 {

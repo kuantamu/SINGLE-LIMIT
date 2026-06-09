@@ -21,5 +21,3 @@ public class HPGageGager : MonoBehaviour
         _image.fillAmount = (float)_myHp / _myMaxHp;
     }
 }
-
-    

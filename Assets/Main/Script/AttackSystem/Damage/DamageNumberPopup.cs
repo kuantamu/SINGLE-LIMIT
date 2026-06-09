@@ -1,24 +1,16 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
-/// <summary>
-/// ダメージ数字ポップアップ。
-/// TextMeshPro（3D版）を使用してワールド空間に直接描画する。
-/// Canvas は使用しない。
-///
-/// ■ Prefab の構成
-///   GameObject（DamageNumberPopup をアタッチ）
-///   └── TextMeshPro - Text（3D版・UI版ではない）← _text にアタッチ
-///
-/// ■ Prefab の配置場所
-///   Resources/DamageNumberPopup という名前で保存すること。
-/// </summary>
 public class DamageNumberPopup : MonoBehaviour
 {
     private const string ResourcePath = "DamageNumberPopup";
 
     [SerializeField] private TextMeshPro _text; // 3D版 TextMeshPro
-    [SerializeField] private TextMeshPro _damageTypeText;
+    [SerializeField] private SpriteRenderer _sprite;
+    [SerializeField] private Sprite _slashImage;
+    [SerializeField] private Sprite _pierceImage;
+    [SerializeField] private Sprite _strikeImage;
     [SerializeField] private TextMeshPro _resistanceTypeText;
 
     private float  _floatSpeed;
@@ -27,7 +19,6 @@ public class DamageNumberPopup : MonoBehaviour
     private Color  _startColor;
     private Camera _cam;
 
-    // ---- Prefab キャッシュ ----
     private static GameObject _cachedPrefab;
 
     public static GameObject GetPrefab()
@@ -44,7 +35,6 @@ public class DamageNumberPopup : MonoBehaviour
         return _cachedPrefab;
     }
 
-    /// <summary>生成直後に呼ぶ初期化メソッド。</summary>
     public void Init(
         int   damage,
         Color color,
@@ -59,7 +49,6 @@ public class DamageNumberPopup : MonoBehaviour
         _elapsed    = 0f;
         _startColor = color;
         
-        // Camera.main はタグ検索するため重い → キャッシュする
         if (_cam == null)
             _cam = Camera.main;
 
@@ -70,8 +59,18 @@ public class DamageNumberPopup : MonoBehaviour
             _text.fontSize = fontSize;
         }
 
-        if (_damageTypeText != null)
-            _damageTypeText.text = damageType.ToString();
+        switch (damageType)
+        {
+            case AttributeType.Slash:
+                _sprite.sprite = _slashImage;
+                break;
+            case AttributeType.Strike:
+                _sprite.sprite = _strikeImage;
+                break;
+            case AttributeType.Pierce:
+                _sprite.sprite = _pierceImage;
+                break;
+        }
 
         if (_resistanceTypeText != null)
             _resistanceTypeText.text = resistanceLevel.ToString();
@@ -81,10 +80,8 @@ public class DamageNumberPopup : MonoBehaviour
     {
         _elapsed += Time.deltaTime;
 
-        // 上昇
         transform.position += Vector3.up * _floatSpeed * Time.deltaTime;
 
-        // フェードアウト
         if (_text != null)
         {
             Color c = _startColor;
@@ -92,7 +89,6 @@ public class DamageNumberPopup : MonoBehaviour
             _text.color = c;
         }
 
-        // カメラの方を向く（ビルボード）
         if (_cam != null)
             transform.forward = _cam.transform.forward;
 

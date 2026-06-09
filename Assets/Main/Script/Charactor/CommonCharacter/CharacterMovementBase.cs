@@ -1,6 +1,5 @@
 using UnityEngine;
 
-//キャラクターの基底移動スクリプト
 [RequireComponent(typeof(Rigidbody))]
 public abstract class CharacterMovementBase : MonoBehaviour
 {
@@ -54,10 +53,6 @@ public abstract class CharacterMovementBase : MonoBehaviour
         Rb.linearVelocity = vel;
     }
 
-    /// <summary>
-    /// 攻撃アシストシステムから速度を上書きする。
-    /// ノックバック中は効果がない（ノックバックが優先される）。
-    /// </summary>
     public void SetAssistVelocity(Vector3 vel)
     {
         if (_isKnockback) return;

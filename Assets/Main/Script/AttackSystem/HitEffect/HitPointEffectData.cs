@@ -1,9 +1,5 @@
 using UnityEngine;
 
-/// <summary>
-/// HitPointEffect の設定を保持する ScriptableObject。
-/// Assets を右クリック → Create → HitEffects → HitPointEffectData で作成する。
-/// </summary>
 [CreateAssetMenu(
     fileName = "HitPointEffectData",
     menuName  = "HitEffects/HitPointEffectData")]

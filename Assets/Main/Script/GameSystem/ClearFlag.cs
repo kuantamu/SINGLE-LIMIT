@@ -36,7 +36,6 @@ public class ClearFlag : MonoBehaviour
         Debug.Log(EnemyStatus.Count);
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (GameOverFlag) return;
@@ -55,7 +54,7 @@ public class ClearFlag : MonoBehaviour
         {
             if (EnemyStatus[0].CurrentHP <= 0)
             {
-                Debug.Log("ÅŒã‚Ìˆêl‚ªŽ€‚ñ‚¾II");
+                Debug.Log("ï¿½ÅŒï¿½Ìˆï¿½lï¿½ï¿½ï¿½ï¿½ï¿½ñ‚¾Iï¿½I");
                 killCamera.ActivateKillCam(EnemyStatus[0].transform);
                 GameOverFlag = true;
             }

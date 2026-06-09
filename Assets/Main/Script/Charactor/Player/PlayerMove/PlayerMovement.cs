@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerMovement : CharacterMovementBase
 {
-    #region　変数
     [Header("Move")]
     [SerializeField] private float _moveSpeed = 5f;
 
@@ -23,7 +22,6 @@ public class PlayerMovement : CharacterMovementBase
     private float _dodgeTimer;
     private Vector3 _dodgeVelocity;
     private bool _isFast;
-    #endregion
     protected override void Awake()
     {
         base.Awake();

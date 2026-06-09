@@ -2,10 +2,6 @@
 using UnityEditor;
 using UnityEngine;
 
-/// <summary>
-/// HitBoxClip のカスタムインスペクター。
-/// Timeline ウィンドウ閉鎖時の SerializedObject Disposed エラーを回避する。
-/// </summary>
 [CustomEditor(typeof(HitBoxClip))]
 public class HitBoxClipEditor : Editor
 {
@@ -67,7 +63,6 @@ public class HitBoxClipEditor : Editor
         }
         catch (System.Exception)
         {
-            // Timeline ウィンドウ閉鎖時のエラーを握りつぶす
         }
     }
 

@@ -1,9 +1,5 @@
 using UnityEngine;
 
-/// <summary>
-/// CharacterStats.OnDeath イベントを状態機械の TriggerDeath() に接続するコンポーネント。
-/// プレイヤー・敵ともに同じ GameObject にアタッチする。
-/// </summary>
 [RequireComponent(typeof(CharacterStats))]
 public class DeathHandler : MonoBehaviour
 {
@@ -15,19 +11,10 @@ public class DeathHandler : MonoBehaviour
 
     private void HandleDeath()
     {
-        // プレイヤーの場合
-        var playerSM = GetComponent<PlayerStateMachine>();
-        if (playerSM != null)
+        var stateMachine = GetComponent<CharacterStateMachineBase>();
+        if(stateMachine != null)
         {
-            playerSM.TriggerDeath();
-            return;
-        }
-
-        // 敵の場合
-        var enemySM = GetComponent<EnemyStateMachine>();
-        if (enemySM != null)
-        {
-            enemySM.TriggerDeath();
+            stateMachine.TriggerDeath();
             return;
         }
 

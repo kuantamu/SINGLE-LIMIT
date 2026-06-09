@@ -1,4 +1,4 @@
-﻿public abstract class PlayerState : ICharacterState
+public abstract class PlayerState : ICharacterState
 {
     protected readonly PlayerStateMachine SM;
 

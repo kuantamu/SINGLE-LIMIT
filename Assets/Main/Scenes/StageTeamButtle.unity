@@ -276,9 +276,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterStats
   _statData: {fileID: 11400000, guid: cc22cf31af96b904a8c51b7ef80fa932, type: 2}
+  _faction: 3
+  _useDefaultFactionRelations: 1
+  _hostileFactions: 0
+  _attackableFactions: 0
   _hitReactionState: 0
   _invincibleBlinkColor: {r: 0, g: 1, b: 1, a: 1}
   _invincibleBlinkSpeed: 12
+  lastAttackChara: {fileID: 0}
 --- !u!114 &320500369
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1463,9 +1468,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterStats
   _statData: {fileID: 11400000, guid: cc22cf31af96b904a8c51b7ef80fa932, type: 2}
+  _faction: 3
+  _useDefaultFactionRelations: 1
+  _hostileFactions: 0
+  _attackableFactions: 0
   _hitReactionState: 0
   _invincibleBlinkColor: {r: 0, g: 1, b: 1, a: 1}
   _invincibleBlinkSpeed: 12
+  lastAttackChara: {fileID: 0}
 --- !u!114 &1653148106
 MonoBehaviour:
   m_ObjectHideFlags: 0

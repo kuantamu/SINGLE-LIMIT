@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 [RequireComponent(typeof(PlayerInputHandler))]
 [RequireComponent(typeof(PlayerMovement))]
@@ -59,7 +59,6 @@ public class PlayerStateMachine : CharacterStateMachineBase
         TickDodgePenalty();
     }
 
-    /// <summary>回避を使った瞬間にペナルティを加算し、今回の段階を返す。</summary>
     public int RegisterDodgeUse()
     {
         bool isRepeatedDodge = Time.time - _lastDodgeUseTime <= DodgeConfig.RepeatWindow;
@@ -99,7 +98,6 @@ public class PlayerStateMachine : CharacterStateMachineBase
             return;
         }
 
-        // 段階が下がるタイミングで小数点以下を消し、次の段階の値へ丸める。
         _dodgePenalty = Mathf.Max(0, level - 1) * Mathf.Max(0.001f, DodgeConfig.PenaltyPerLevel);
         _nextDodgePenaltyDecayTime = Time.time + DodgeConfig.PenaltyDecayInterval;
     }

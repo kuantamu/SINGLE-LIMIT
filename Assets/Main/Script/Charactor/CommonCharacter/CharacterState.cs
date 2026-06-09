@@ -1,6 +1,3 @@
-﻿/// <summary>
-/// キャラクターの基底ステート
-/// </summary>
 
 public interface ICharacterState
 {

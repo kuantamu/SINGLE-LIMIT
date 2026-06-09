@@ -1,10 +1,6 @@
 using UnityEngine;
 using UnityEngine.Playables;
 
-/// <summary>
-/// Plays an effect prefab from Timeline.
-/// ParticleSystems are sampled with Simulate so seeking and speed changes stay in sync.
-/// </summary>
 [System.Serializable]
 public class EffectExampleBehaviour : PlayableBehaviour
 {

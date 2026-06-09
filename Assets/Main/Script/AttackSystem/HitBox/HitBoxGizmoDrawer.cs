@@ -2,15 +2,6 @@ using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
 
-/// <summary>
-/// Scene パネルにヒットボックスの Gizmo を描画するコンポーネント。
-/// キャラクター（PlayableDirector と同じ GameObject）にアタッチする。
-///
-/// ■ 表示内容
-///   ・Timeline 上の全 HitBoxClip の位置とサイズをワイヤーフレームで表示
-///   ・Timeline を再生すると有効なクリップが赤、無効なクリップが灰色で表示
-///   ・再生していない時はすべて灰色で表示（配置の確認用）
-/// </summary>
 [RequireComponent(typeof(PlayableDirector))]
 public class HitBoxGizmoDrawer : MonoBehaviour
 {
@@ -50,7 +41,6 @@ public class HitBoxGizmoDrawer : MonoBehaviour
 
     private void DrawHitBoxGizmo(HitBoxClip clip, bool isActive)
     {
-        // キャラクターのローカル座標をワールド座標に変換
         Vector3    worldPos = transform.TransformPoint(clip.Offset);
         Quaternion worldRot = transform.rotation;
         Vector3    worldSize = Vector3.Scale(clip.Size, transform.lossyScale);
@@ -60,7 +50,6 @@ public class HitBoxGizmoDrawer : MonoBehaviour
 
         if (isActive)
         {
-            // 有効時：赤の半透明塗りつぶし + 赤のワイヤーフレーム
             Gizmos.color = new Color(1f, 0.15f, 0.15f, 0.25f);
             Gizmos.DrawCube(Vector3.zero, worldSize);
             Gizmos.color = new Color(1f, 0.15f, 0.15f, 0.9f);
@@ -68,12 +57,10 @@ public class HitBoxGizmoDrawer : MonoBehaviour
         }
         else
         {
-            // 無効時：薄い灰色のワイヤーフレームのみ
             Gizmos.color = new Color(0.8f, 0.8f, 0.8f, 0.3f);
             Gizmos.DrawWireCube(Vector3.zero, worldSize);
         }
 
-        // matrix をリセット
         Gizmos.matrix = Matrix4x4.identity;
     }
 #endif

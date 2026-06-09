@@ -3,7 +3,6 @@ using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
 
-// A behaviour that is attached to a playable
 public class EffectPlayableBehaviour : PlayableBehaviour
 {
     public TimelineClip[] Clips { get; set; }
@@ -13,25 +12,21 @@ public class EffectPlayableBehaviour : PlayableBehaviour
 
     ParticleSystem ps;
 
-    // Called when the owning graph starts playing
     public override void OnGraphStart(Playable playable)
     {
         
     }
 
-    // Called when the owning graph stops playing
     public override void OnGraphStop(Playable playable)
     {
         
     }
 
-    // Called when the state of the playable is set to Play
     public override void OnBehaviourPlay(Playable playable, FrameData info)
     {
 
     }
 
-    // Called when the state of the playable is set to Paused
     public override void OnBehaviourPause(Playable playable, FrameData info)
     {
         if (ps != null)
@@ -40,7 +35,6 @@ public class EffectPlayableBehaviour : PlayableBehaviour
         }
     }
 
-    // Called each frame while the state is set to Play
     public override void ProcessFrame(Playable playable, FrameData info, object playerData)
     {
         if (ps == null)
@@ -56,7 +50,6 @@ public class EffectPlayableBehaviour : PlayableBehaviour
 
         if (ps != null)
         {
-            // Timelineの時間をパーティクルのシミュレーション時間に同期
             ps.Simulate((float)playable.GetTime(), true, true, false);
         }
     }
