@@ -181,7 +181,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c38f6fa1940124db1ab7f6fe7268d1, type: 3}
   m_Name: "\u30B7\u30B0\u30CA\u30EB\u30A8\u30DF\u30C3\u30BF\u30FC"
   m_EditorClassIdentifier: Unity.Timeline::UnityEngine.Timeline.SignalEmitter
-  m_Time: 0.3
+  m_Time: 0.15
   m_Retroactive: 0
   m_EmitOnce: 0
   m_Asset: {fileID: 11400000, guid: 3e2c5735dfe708b4393dc5342ee257dd, type: 2}
@@ -542,9 +542,4 @@ MonoBehaviour:
     Distance: -0.2
     Duration: 0.3
   SkillPower: 1
-  BuffDebuffApplications:
-  - _buffType: 1
-    _multiplier: 1.5
-    _duration: 10
-    _overwriteMultiplier: 0
-    _overwriteDuration: 0
+  BuffDebuffApplications: []

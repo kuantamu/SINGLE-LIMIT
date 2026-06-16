@@ -371,6 +371,7 @@ public class PlayerKnockbackState : PlayerState
 
     public override void Enter()
     {
+        Debug.Log("1");
         SM.Movement.StartKnockback(_dir, _distance, _duration);
         SM.AnimController.OnMotionEnd += HandleMotionEnd;
         SM.AnimController.PlayStagger();
@@ -378,6 +379,7 @@ public class PlayerKnockbackState : PlayerState
 
     public override void Exit()
     {
+        Debug.Log("2");
         SM.AnimController.OnMotionEnd -= HandleMotionEnd;
         SM.Movement.StopKnockback();
     }

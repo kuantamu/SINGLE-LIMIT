@@ -57,6 +57,8 @@ public class PlayerStateMachine : CharacterStateMachineBase
             DodgeCooldownTimer -= Time.deltaTime;
 
         TickDodgePenalty();
+
+
     }
 
     public int RegisterDodgeUse()

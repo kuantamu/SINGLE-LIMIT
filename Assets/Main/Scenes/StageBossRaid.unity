@@ -5190,7 +5190,7 @@ PlayableDirector:
   m_GameObject: {fileID: 1001908499260209341}
   m_Enabled: 1
   serializedVersion: 3
-  m_PlayableAsset: {fileID: 11400000, guid: 2294efc69f9a30843a054830dd1d9de1, type: 2}
+  m_PlayableAsset: {fileID: 11400000, guid: 21101bab48af53a418c0dcab8beda498, type: 2}
   m_InitialState: 1
   m_WrapMode: 2
   m_DirectorUpdateMode: 1
@@ -5235,6 +5235,16 @@ PlayableDirector:
   - key: {fileID: 3960843826719918364, guid: bcedd19ca528bf54897baf1743af1d7b, type: 2}
     value: {fileID: 7430384612538692539}
   - key: {fileID: 9070948139561538604, guid: 671d78f8222a1c74eb510dcad5cc22ca, type: 2}
+    value: {fileID: 7430384612538692539}
+  - key: {fileID: -5977145333563401004, guid: 21101bab48af53a418c0dcab8beda498, type: 2}
+    value: {fileID: 1237115768671663449}
+  - key: {fileID: 3785919431801556781, guid: 21101bab48af53a418c0dcab8beda498, type: 2}
+    value: {fileID: 867659365827099867}
+  - key: {fileID: 7315750237903979868, guid: 21101bab48af53a418c0dcab8beda498, type: 2}
+    value: {fileID: 3817951179350660973}
+  - key: {fileID: 3063763825396005529, guid: 21101bab48af53a418c0dcab8beda498, type: 2}
+    value: {fileID: 3817951179350660973}
+  - key: {fileID: 3960843826719918364, guid: 21101bab48af53a418c0dcab8beda498, type: 2}
     value: {fileID: 7430384612538692539}
   m_ExposedReferences:
     m_References: []
@@ -5896,7 +5906,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!320 &7947690407013340619
 PlayableDirector:
   m_ObjectHideFlags: 0
@@ -6131,7 +6141,7 @@ MonoBehaviour:
   _guardTimeline: {fileID: 11400000, guid: ba2515d90e9f8ba4ab538e212d9adb2b, type: 2}
   _dodgeTimeline: {fileID: 11400000, guid: 351a2db0cd4e6aa45a92a53de0505012, type: 2}
   _deathTimeline: {fileID: 11400000, guid: f255c2db968064f408653ac4ad548d11, type: 2}
-  _specialTimeline: {fileID: 11400000, guid: 6e505b79e3686f044bbbd8f6596fe7f1, type: 2}
+  _specialTimeline: {fileID: 11400000, guid: 21101bab48af53a418c0dcab8beda498, type: 2}
   _staggerTimeline: {fileID: 11400000, guid: 351a2db0cd4e6aa45a92a53de0505012, type: 2}
   _attackTimelines:
   - {fileID: 11400000, guid: 2294efc69f9a30843a054830dd1d9de1, type: 2}
@@ -6226,7 +6236,7 @@ Transform:
   m_GameObject: {fileID: 1290808863929173240}
   serializedVersion: 2
   m_LocalRotation: {x: 0.049266346, y: 0.00000007072893, z: 0.000000014411653, w: 0.9987857}
-  m_LocalPosition: {x: -0.0012956634, y: -0.08359045, z: -0.035799026}
+  m_LocalPosition: {x: -0.0012956634, y: -0.08359045, z: -0.03579908}
   m_LocalScale: {x: 1, y: 1.0000004, z: 1.0000004}
   m_ConstrainProportionsScale: 0
   m_Children:
