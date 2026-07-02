@@ -17,6 +17,8 @@ public enum HitReactionState
 
     Dead
 }
+
+[RequireComponent(typeof(CharacterBlinkVisual))]
 public class CharacterStats : MonoBehaviour
 {
     [Header("Status Data")]
@@ -34,18 +36,9 @@ public class CharacterStats : MonoBehaviour
     [Header("Hit Reaction Debug")]
     [SerializeField] private HitReactionState _hitReactionState = HitReactionState.Normal;
 
-    [SerializeField] private Color _invincibleBlinkColor = Color.cyan;
+    [SerializeField] public CharacterBlinkVisual _blinkVisual = new CharacterBlinkVisual();
 
-    [SerializeField] private float _invincibleBlinkSpeed = 12f;
     private readonly List<DamageBuff> _damageBuffs = new List<DamageBuff>();
-
-    private readonly List<MaterialPropertyBlock> _rendererBlocks = new List<MaterialPropertyBlock>();
-
-    private Renderer[] _renderers;
-
-    private Color[] _baseColors;
-
-    private HitReactionState _lastAppliedHitReactionState;
 
     private HitReactionState _stateBeforeTimedState;
 
@@ -53,8 +46,6 @@ public class CharacterStats : MonoBehaviour
 
     private bool _hasTimedState;
 
-    private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
-    private static readonly int ColorId = Shader.PropertyToID("_Color");
     public CharacterStats lastAttackChara;
 
     public CharacterStatData StatData => _statData;
@@ -73,6 +64,7 @@ public class CharacterStats : MonoBehaviour
 
     public CharacterFactionMask GetEnemyFaction() => _hostileFactions;
 
+    #region 現在のステータス関連
     public void SetStatData(CharacterStatData statData, bool resetHp)
     {
         if (statData == null) return;
@@ -110,6 +102,8 @@ public class CharacterStats : MonoBehaviour
 
     public float IncomingDamageMultiplier => GetDamageMultiplier(DamageBuffTarget.IncomingDamage);
 
+    #endregion
+
     public event Action<int, bool, AttributeType> OnDamaged;
 
     public event Action OnDeath;
@@ -118,7 +112,7 @@ public class CharacterStats : MonoBehaviour
 
     private void Awake()
     {
-        CacheRenderers();
+        _blinkVisual.CacheRenderers(_hitReactionState);
 
         if (_statData == null)
         {
@@ -135,7 +129,7 @@ public class CharacterStats : MonoBehaviour
 
         TickTimedHitReactionState(Time.deltaTime);
 
-        UpdateHitReactionVisual();
+        _blinkVisual.UpdateHitReactionVisual(IsInvincible,_hitReactionState);
 
         IsCharacterDead();
     }
@@ -168,13 +162,16 @@ public class CharacterStats : MonoBehaviour
         if (CurrentHP <= 0)
             OnDeath?.Invoke();
     }
+
+    //ヒット判定の状態をセットする
     public void SetHitReactionState(HitReactionState state)
     {
         _hasTimedState = false;
         _timedStateTimer = 0f;
         _hitReactionState = state;
     }
-    public void SetTimedHitReactionState(HitReactionState state, float duration)
+    //時間の条件付きヒット判定の状態を付ける
+    public void SetHitReactionState(HitReactionState state, float duration)
     {
         if (duration <= 0f)
         {
@@ -187,6 +184,7 @@ public class CharacterStats : MonoBehaviour
         _timedStateTimer = duration;
         _hasTimedState = true;
     }
+    //属性耐性変更システム
     public ResistanceLevel GetEffectiveAttributeResistanceLevel(AttributeType attribute)
     {
         if (IsDown) return ResistanceLevel.Weak;
@@ -288,56 +286,8 @@ public class CharacterStats : MonoBehaviour
         _timedStateTimer  = 0f;
         _hasTimedState = false;
     }
-    private void CacheRenderers()
-    {
-        _renderers = GetComponentsInChildren<Renderer>();
-        _baseColors = new Color[_renderers.Length];
-        _rendererBlocks.Clear();
-
-        for (int i = 0; i < _renderers.Length; i++)
-        {
-            Renderer renderer = _renderers[i];
-            Material sharedMaterial = renderer.sharedMaterial;
-
-            _baseColors[i] = sharedMaterial != null && sharedMaterial.HasProperty(BaseColorId)
-                ? sharedMaterial.GetColor(BaseColorId)
-                : sharedMaterial != null && sharedMaterial.HasProperty(ColorId)
-                    ? sharedMaterial.GetColor(ColorId)
-                    : Color.white;
-
-            _rendererBlocks.Add(new MaterialPropertyBlock());
-        }
-
-        _lastAppliedHitReactionState = _hitReactionState;
-    }
-    private void UpdateHitReactionVisual()
-    {
-        if (_renderers == null || _renderers.Length == 0) return;
-
-        bool shouldBlink = IsInvincible;
-
-        if (!shouldBlink && _lastAppliedHitReactionState == _hitReactionState) return;
-
-        for (int i = 0; i < _renderers.Length; i++)
-        {
-            Renderer renderer = _renderers[i];
-            if (renderer == null) continue;
-
-            MaterialPropertyBlock block = _rendererBlocks[i];
-            renderer.GetPropertyBlock(block);
-
-            Color color = shouldBlink
-                ? Color.Lerp(_baseColors[i], _invincibleBlinkColor,
-                    Mathf.PingPong(Time.time * _invincibleBlinkSpeed, 1f))
-                : _baseColors[i];
-
-            block.SetColor(BaseColorId, color);
-            block.SetColor(ColorId, color);
-            renderer.SetPropertyBlock(block);
-        }
-
-        _lastAppliedHitReactionState = _hitReactionState;
-    }
+    
+    
     void IsCharacterDead()
     {
         if(_hitReactionState == HitReactionState.Dead)

@@ -5,12 +5,15 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerAnimationController))]
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(CharacterStats))]
+[RequireComponent(typeof(WeaponHolder))]
 public class PlayerStateMachine : CharacterStateMachineBase
 {
     public PlayerInputHandler InputHandler { get; private set; }
     public PlayerMovement Movement { get; private set; }
     public PlayerAnimationController AnimController { get; private set; }
+    public WeaponHolder WeaponHolder { get; private set; }
     public CharacterStats CharStats => Stats;
+    public WeaponData CurrentWeapon => WeaponHolder != null ? WeaponHolder.CurrentWeapon : null;
 
     [Header("Dodge Settings")]
     [SerializeField] public DodgeSettings DodgeConfig = new DodgeSettings();
@@ -37,6 +40,7 @@ public class PlayerStateMachine : CharacterStateMachineBase
         InputHandler = GetComponent<PlayerInputHandler>();
         Movement = GetComponent<PlayerMovement>();
         AnimController = GetComponent<PlayerAnimationController>();
+        WeaponHolder = GetComponent<WeaponHolder>();
 
         Idle = new IdleState(this);
         Guard = new GuardState(this);
@@ -88,6 +92,31 @@ public class PlayerStateMachine : CharacterStateMachineBase
         return DodgeConfig.InvincibleDuration * multiplier;
     }
 
+    public bool CanUseAttack()
+    {
+        return CurrentWeapon == null || CurrentWeapon.States == null || CurrentWeapon.States.CanAttack;
+    }
+
+    public bool CanUseHeavyAttack()
+    {
+        return CurrentWeapon == null || CurrentWeapon.States == null || CurrentWeapon.States.CanHeavyAttack;
+    }
+
+    public bool CanUseGuard()
+    {
+        return CurrentWeapon == null || CurrentWeapon.States == null || CurrentWeapon.States.CanGuard;
+    }
+
+    public bool CanUseSpecial()
+    {
+        return CurrentWeapon == null || CurrentWeapon.States == null || CurrentWeapon.States.CanSpecial;
+    }
+
+    public bool CanUseDodge()
+    {
+        return CurrentWeapon == null || CurrentWeapon.States == null || CurrentWeapon.States.CanDodge;
+    }
+
     private void TickDodgePenalty()
     {
         if (_dodgePenalty <= 0f || Time.time < _nextDodgePenaltyDecayTime) return;
@@ -116,7 +145,7 @@ public class PlayerStateMachine : CharacterStateMachineBase
         if (IsDeadState) return;
         if (CharStats != null && !CharStats.CanBeKnockedBack) return;
 
-        CharStats?.SetTimedHitReactionState(HitReactionState.Down, duration);
+        CharStats?.SetHitReactionState(HitReactionState.Down, duration);
         Knockback.SetKnockback(dir, distance, duration);
         TransitionTo(Knockback);
     }

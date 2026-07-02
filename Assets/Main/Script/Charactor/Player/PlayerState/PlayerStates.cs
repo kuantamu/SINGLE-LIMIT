@@ -6,27 +6,27 @@ public class IdleState : PlayerState
 
     public override void Update()
     {
-        if (SM.InputHandler.SpecialPressed)
+        if (SM.InputHandler.SpecialPressed && SM.CanUseSpecial())
         {
             SM.InputHandler.CancelBuffer();
             SM.TransitionTo(SM.Special);
             return;
         }
 
-        if (SM.InputHandler.AttackPressed)
+        if (SM.InputHandler.AttackPressed && SM.CanUseAttack())
         {
             SM.InputHandler.CancelBuffer();
             SM.Attack.SetComboIndex(0);
             SM.TransitionTo(SM.Attack);
             return;
         }
-        if (SM.InputHandler.HeavyAttackPressed)
+        if (SM.InputHandler.HeavyAttackPressed && SM.CanUseHeavyAttack())
         {
             SM.TransitionTo(SM.HeavyAttack);
             return;
         }
 
-        if (SM.InputHandler.IsGuardHeld)
+        if (SM.InputHandler.IsGuardHeld && SM.CanUseGuard())
         {
             SM.InputHandler.CancelBuffer();
             SM.TransitionTo(SM.Guard);
@@ -66,14 +66,14 @@ public class GuardState : PlayerState
 
     public override void Update()
     {
-        if (SM.InputHandler.AttackPressed)
+        if (SM.InputHandler.AttackPressed && SM.CanUseAttack())
         {
             SM.InputHandler.CancelBuffer();
             SM.Attack.SetComboIndex(0);
             SM.TransitionTo(SM.Attack);
             return;
         }
-        if (SM.InputHandler.HeavyAttackPressed)
+        if (SM.InputHandler.HeavyAttackPressed && SM.CanUseHeavyAttack())
         {
             SM.TransitionTo(SM.HeavyAttack);
             return;
@@ -87,7 +87,7 @@ public class GuardState : PlayerState
         
         SM.Movement.FaceCamera();
         SM.Movement.GuardMove(SM.InputHandler.MoveInput);
-        if (SM.InputHandler.IsDodgePush)
+        if (SM.InputHandler.IsDodgePush && SM.CanUseDodge())
         {
             SM.InputHandler.CancelBuffer();
             SM.TransitionTo(SM.Dodge);
@@ -187,7 +187,7 @@ public class DodgeState : PlayerState
                 break;
             case Phase.Active:
                 _phaseTimer = _activeDuration;
-                SM.CharStats?.SetTimedHitReactionState(
+                SM.CharStats?.SetHitReactionState(
                     HitReactionState.Invincible,
                     SM.GetDodgeInvincibleDuration(_penaltyLevel));
                 SM.Movement.StartDodgeMove(_dodgeInput, _isSpotDodge, _activeDuration);
@@ -232,19 +232,19 @@ public class AttackState : PlayerState
     {
         if (!_cancellable) return;
 
-        if (SM.InputHandler.AttackPressed || SM.InputHandler.ConsumeBufferedAttack())
+        if (SM.CanUseAttack() && (SM.InputHandler.AttackPressed || SM.InputHandler.ConsumeBufferedAttack()))
         {
             _comboIndex = (_comboIndex + 1) % SM.AnimController.AttackCount;
             SM.TransitionTo(SM.Attack);
             return;
         }
-        if (SM.InputHandler.HeavyAttackPressed)
+        if (SM.InputHandler.HeavyAttackPressed && SM.CanUseHeavyAttack())
         {
             SM.TransitionTo(SM.HeavyAttack);
             return;
         }
 
-        if (SM.InputHandler.SpecialPressed)
+        if (SM.InputHandler.SpecialPressed && SM.CanUseSpecial())
         {
             SM.InputHandler.CancelBuffer();
             SM.TransitionTo(SM.Special);
@@ -257,7 +257,7 @@ public class AttackState : PlayerState
             return;
         }
 
-        if (SM.InputHandler.IsGuardHeld)
+        if (SM.InputHandler.IsGuardHeld && SM.CanUseGuard())
         {
             SM.TransitionTo(SM.Guard);
             return;
@@ -311,13 +311,13 @@ public class HeavyAttackState : PlayerState
             return;
         }
 
-        if (SM.InputHandler.IsGuardHeld)
+        if (SM.InputHandler.IsGuardHeld && SM.CanUseGuard())
         {
             SM.TransitionTo(SM.Guard);
             return;
         }
 
-        if (SM.InputHandler.SpecialPressed)
+        if (SM.InputHandler.SpecialPressed && SM.CanUseSpecial())
         {
             SM.TransitionTo(SM.Special);
             return;

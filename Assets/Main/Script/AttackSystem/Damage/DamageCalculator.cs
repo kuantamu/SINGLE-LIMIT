@@ -9,10 +9,7 @@ public static class DamageCalculator
     private const float ResistMultiplier = 0.5f;
     private const float ImmuneMultiplier = 0.0f;
 
-    public static int Calculate(
-        DamageInfo       info,
-        CharacterStatData defenderStats,
-        out bool          isCritical)
+    public static int Calculate(DamageInfo info,CharacterStatData defenderStats,out bool isCritical)
     {
         isCritical = Random.value < info.CriticalRate;
 

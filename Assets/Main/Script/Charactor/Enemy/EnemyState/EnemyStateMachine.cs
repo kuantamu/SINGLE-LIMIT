@@ -77,7 +77,7 @@ public class EnemyStateMachine : CharacterStateMachineBase
         if (IsDeadState) return;
         if (CharStats != null && !CharStats.CanBeKnockedBack) return;
 
-        CharStats?.SetTimedHitReactionState(HitReactionState.Down, duration);
+        CharStats?.SetHitReactionState(HitReactionState.Down, duration);
         Knockback.SetKnockback(dir, distance, duration);
         TransitionTo(Knockback);
     }
